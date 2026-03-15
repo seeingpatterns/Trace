@@ -274,6 +274,44 @@
     color: #e8e4df;
     background: rgba(255,255,255,0.1);
   }
+
+  /* ── 모바일 반응형 ── */
+  @media (max-width: 768px) {
+    .header { padding: 16px 16px; }
+    .header h1 { font-size: 18px; letter-spacing: 4px; }
+    .header-right { font-size: 9px; }
+
+    /* 검색 박스: 제목 아래로 */
+    .search-wrap { top: 60px; }
+    .search-input { width: 180px; font-size: 12px; padding: 6px 14px; }
+    .search-input:focus { width: 220px; }
+
+    /* 내 별 찾기: 클러스터 범례 위로 */
+    .find-panel { bottom: 72px; }
+    .find-panel input { width: 150px; font-size: 12px; padding: 7px 12px; }
+    .find-panel button { font-size: 11px; padding: 7px 12px; }
+
+    /* 클러스터 범례 */
+    .legend { left: 16px; bottom: 16px; gap: 8px; }
+    .legend-item { font-size: 9px; }
+
+    .counter { right: 16px; bottom: 16px; font-size: 11px; }
+    .hint { display: none; }
+
+    /* 보물찾기 배너 */
+    .treasure-banner { top: 100px; width: 90%; font-size: 11px; padding: 8px 16px; }
+
+    /* 영화 카드: 화면 하단 고정, 좌우 잘림 방지 */
+    .film-card {
+      width: calc(100vw - 32px);
+      max-width: 320px;
+      left: 16px !important;
+      right: 16px;
+      bottom: 80px;
+      top: auto !important;
+      position: fixed;
+    }
+  }
 </style>
 </head>
 <body>
@@ -784,6 +822,58 @@ function bindEvents() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     bloomPass.setSize(window.innerWidth, window.innerHeight);
   });
+
+  // 모바일 터치 지원
+  renderer.domElement.addEventListener('touchstart', (e) => {
+    isDragging = true; hasDragged = false;
+    const t = e.touches[0];
+    dragStart = { x: t.clientX, y: t.clientY };
+  }, { passive: true });
+
+  renderer.domElement.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    const dx = t.clientX - dragStart.x;
+    const dy = t.clientY - dragStart.y;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) hasDragged = true;
+
+    if (isDragging && hasDragged) {
+      gsap.to(group.rotation, {
+        y: group.rotation.y + dx * 0.005,
+        x: THREE.MathUtils.clamp(group.rotation.x + dy * 0.005, -0.8, 0.8),
+        duration: 0.5, ease: 'power1.out',
+      });
+      dragStart = { x: t.clientX, y: t.clientY };
+    }
+  }, { passive: true });
+
+  renderer.domElement.addEventListener('touchend', (e) => {
+    if (!hasDragged && e.changedTouches.length > 0) {
+      // 탭: 별 선택
+      const t = e.changedTouches[0];
+      mouseNDC.x = (t.clientX / window.innerWidth) * 2 - 1;
+      mouseNDC.y = -(t.clientY / window.innerHeight) * 2 + 1;
+
+      if (filmNodePoints) {
+        raycaster.setFromCamera(mouseNDC, camera);
+        const intersects = raycaster.intersectObject(filmNodePoints);
+        if (intersects.length > 0 && intersects[0].index < films.length) {
+          hoveredIdx = intersects[0].index;
+          const f = films[hoveredIdx];
+          const color = COLORS[f.cluster % COLORS.length];
+          for (let j = 0; j < 10; j++) {
+            const spark = new Sparkle();
+            spark.setup(filmPositions3D[hoveredIdx], color);
+            sparkles.push(spark);
+          }
+          updateCard(t.clientX, t.clientY);
+        } else {
+          hoveredIdx = -1;
+          document.getElementById('card').classList.remove('visible');
+        }
+      }
+    }
+    isDragging = false;
+  });
 }
 
 function onMouseMove(e) {
@@ -863,6 +953,8 @@ function updateCard(mx, my) {
 
 function positionCard(mx, my) {
   const card = document.getElementById('card');
+  // 모바일: CSS가 위치를 제어하므로 스킵
+  if (window.innerWidth <= 768) return;
   let left = mx + 20, top = my - 20;
   if (left + 320 > window.innerWidth - 16) left = mx - 340;
   if (top + (card.offsetHeight||200) > window.innerHeight - 16) top = window.innerHeight - (card.offsetHeight||200) - 16;
