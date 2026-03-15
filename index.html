@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trace — 50편의 영화 성좌도</title>
+<title>Cinegraph — 영화 임베딩 성좌도</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 
@@ -180,6 +180,34 @@
     font-size: 10px; color: #555; letter-spacing: 1px;
   }
 
+  /* ── 보물찾기 배너 ── */
+  .treasure-banner {
+    position: fixed; top: 70px; left: 50%;
+    transform: translateX(-50%); z-index: 150;
+    background: rgba(30, 227, 207, 0.08);
+    border: 1px solid rgba(30, 227, 207, 0.25);
+    border-radius: 3px;
+    padding: 10px 24px;
+    font-size: 13px; color: #1EE3CF;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(12px);
+    display: none;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .treasure-banner .user-name {
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .treasure-banner .found-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600;
+    color: #1EE3CF;
+    margin: 0 4px;
+  }
+
   .loading {
     position: fixed; inset: 0; z-index: 999;
     display: flex; flex-direction: column;
@@ -202,12 +230,12 @@
 <body>
 
 <div class="loading" id="loading">
-  <h2>Trace</h2>
+  <h2>Cinegraph</h2>
   <p>LOADING CONSTELLATION...</p>
 </div>
 
 <div class="header">
-  <h1><span>T</span>race</h1>
+  <h1><span>C</span>inegraph</h1>
   <div class="header-right">51 Films<br>Neural Constellation</div>
 </div>
 
@@ -215,6 +243,7 @@
   <input type="text" class="search-input" id="search" placeholder="영화 검색..." autocomplete="off">
 </div>
 
+<div class="treasure-banner" id="treasure-banner"></div>
 <div class="legend" id="legend"></div>
 <div class="counter" id="counter">51 films</div>
 <div class="hint">drag to rotate · scroll to zoom</div>
@@ -395,6 +424,11 @@ let hoveredIdx = -1;
 let activeCluster = -1;
 let searchTerm = '';
 
+// ── URL 파라미터 보물찾기 ──
+const urlParams = new URLSearchParams(window.location.search);
+const highlightUser = urlParams.get('user')?.toLowerCase() || '';
+let userFilmIndices = []; // 이 유저가 추천한 영화 인덱스들
+
 // 연결선 & 노드 레퍼런스
 const lines = [];
 let filmNodePoints = null;
@@ -405,6 +439,23 @@ async function init() {
     films = await resp.json();
   } catch {
     films = generateDemoData();
+  }
+
+  // 보물찾기: URL에 ?user=xxx 가 있으면 해당 유저의 영화 찾기
+  if (highlightUser) {
+    userFilmIndices = [];
+    films.forEach((f, i) => {
+      const recommenders = f.recommender.toLowerCase().split(/\s*\/\s*/);
+      if (recommenders.some(r => r.trim() === highlightUser)) {
+        userFilmIndices.push(i);
+      }
+    });
+
+    if (userFilmIndices.length > 0) {
+      const banner = document.getElementById('treasure-banner');
+      banner.style.display = 'block';
+      banner.innerHTML = `<span class="user-name">@${highlightUser}</span> 님이 추천한 영화 <span class="found-count">${userFilmIndices.length}</span>편이 빛나고 있어요! 찾아보세요`;
+    }
   }
 
   buildConstellation();
@@ -500,9 +551,13 @@ function buildConstellation() {
   const nodePosArr = [], nodeColArr = [], nodeSizeArr = [];
   films.forEach((f, i) => {
     const c = COLORS[f.cluster % COLORS.length];
+    const isUserFilm = highlightUser && userFilmIndices.includes(i);
+    const isDimmed = highlightUser && !isUserFilm;
+    const mult = isDimmed ? 0.12 : isUserFilm ? 1.5 : 1.0;
+
     nodePosArr.push(f.nx, f.ny, f.nz);
-    nodeColArr.push(c.r, c.g, c.b);
-    nodeSizeArr.push(5 * pixelRatio);
+    nodeColArr.push(c.r * mult, c.g * mult, c.b * mult);
+    nodeSizeArr.push((isUserFilm ? 9 : isDimmed ? 3 : 5) * pixelRatio);
   });
 
   const nodeGeo = new THREE.BufferGeometry();
@@ -515,9 +570,11 @@ function buildConstellation() {
   // ── 각 영화에서 초기 Sparkle 분출 ──
   films.forEach((f, i) => {
     const color = COLORS[f.cluster % COLORS.length];
-    for (let j = 0; j < 3; j++) {
+    const isUserFilm = highlightUser && userFilmIndices.includes(i);
+    const count = isUserFilm ? 15 : 3; // 유저 영화는 스파클 폭발
+    for (let j = 0; j < count; j++) {
       const spark = new Sparkle();
-      spark.setup(filmPositions3D[i], color);
+      spark.setup(filmPositions3D[i], isUserFilm ? new THREE.Color('#ffffff') : color);
       sparkles.push(spark);
     }
   });
