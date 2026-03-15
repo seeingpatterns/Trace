@@ -24,7 +24,7 @@ FILMS = [
      "description": "낮은 지능이지만 순수한 마음으로 격동의 미국 현대사를 관통하며 사랑과 우정, 운명을 보여주는 한 남자의 일대기. 성장, 운명, 순수함의 이야기."},
     {"title": "언터처블: 1%의 우정", "title_en": "The Intouchables", "year": 2011, "director": "올리비에 나카슈", "recommender": "ban_byung_jong", "note": "마음이 따뜻해짐",
      "description": "전신마비 부자와 빈민가 출신 간병인이 계급과 편견을 넘어 진정한 우정을 만들어가는 실화 기반 이야기. 우정, 계급, 따뜻함."},
-    {"title": "인생은 아름다워", "title_en": "La vita è bella", "year": 1997, "director": "로베르토 베니니", "recommender": "fencer211 / seed_106", "note": "원제는 La vita è bella",
+    {"title": "인생은 아름다워", "title_en": "La vita è bella", "year": 1997, "director": "로베르토 베니니", "recommender": "fencer211 / seed_106 / chris_chang_arong", "note": "원제는 La vita è bella",
      "description": "나치 수용소에서 아들을 지키기 위해 모든 것을 게임으로 만든 아버지의 이야기. 사랑, 희생, 순수함, 유머로 감싼 비극."},
     {"title": "아이 엠 샘", "title_en": "I Am Sam", "year": 2001, "director": "제시 넬슨", "recommender": "whateveriwant2007",
      "description": "지적 장애를 가진 아버지가 딸의 양육권을 지키기 위해 싸우는 이야기. 사랑, 순수함, 정의와 편견에 대한 질문."},
@@ -58,7 +58,7 @@ FILMS = [
      "description": "시칠리아 작은 마을의 영화관에서 자란 소년이 어른이 되어 돌아보는 기억과 사랑. 기억, 향수, 사랑, 영화에 대한 사랑."},
     {"title": "원스 어폰 어 타임 인 아메리카", "title_en": "Once Upon a Time in America", "year": 1984, "director": "세르지오 레오네", "recommender": "chris_chang_arong",
      "description": "금주법 시대부터 시작되는 갱스터들의 우정과 배신을 시간을 넘나들며 그린 서사시. 시간, 배신, 기억, 후회."},
-    {"title": "패왕별희", "title_en": "Farewell My Concubine", "year": 1993, "director": "천카이거", "recommender": "ljs2_31", "note": "옛날영화지만",
+    {"title": "패왕별희", "title_en": "Farewell My Concubine", "year": 1993, "director": "천카이거", "recommender": "ljs2_31 / chris_chang_arong", "note": "옛날영화지만",
      "description": "경극 배우 두 사람의 예술과 사랑, 그리고 중국 현대사의 격변 속에서 무너지는 관계. 정체성, 충성, 역사, 예술과 삶."},
 
     # 서스펜스 / 스릴러 / 심리
@@ -109,13 +109,13 @@ FILMS = [
      "description": "그리스 섬에서 벌어지는 ABBA 음악과 함께하는 유쾌한 가족 이야기. 기쁨, 사랑, 자유."},
 
     # 일본
-    {"title": "혐오스러운 마츠코의 일생", "title_en": "Memories of Matsuko", "year": 2006, "director": "나카시마 테츠야", "recommender": "somuchjin_",
+    {"title": "혐오스러운 마츠코의 일생", "title_en": "Memories of Matsuko", "year": 2006, "director": "나카시마 테츠야", "recommender": "somuchjin_ / chris_chang_arong",
      "description": "사랑받고 싶어 끝없이 헤매는 한 여성의 파란만장한 인생. 사랑, 거절, 외로움, 자기파괴."},
     {"title": "괴물", "title_en": "Monster", "year": 2023, "director": "고레에다 히로카즈", "recommender": "triever___", "note": "서스펜스가 부분적으로 들어간 휴먼드라마",
      "description": "같은 사건을 세 가지 시점으로 보여주며 진실이 뒤집히는 이야기. 시점, 순수함, 진실, 편견."},
 
     # 기타
-    {"title": "레옹", "title_en": "Léon: The Professional", "year": 1994, "director": "뤽 베송", "recommender": "_picto__", "note": "감독판 추천",
+    {"title": "레옹", "title_en": "Léon: The Professional", "year": 1994, "director": "뤽 베송", "recommender": "_picto__ / chris_chang_arong", "note": "감독판 추천",
      "description": "고독한 킬러와 가족을 잃은 소녀의 만남. 외로움, 사랑, 순수함, 보호와 폭력의 대비."},
     {"title": "쇼생크 탈출", "title_en": "The Shawshank Redemption", "year": 1994, "director": "프랭크 다라본트", "recommender": "erani13 / kingsunny0815",
      "description": "무고하게 수감된 은행가가 인내와 희망으로 자유를 찾는 이야기. 희망, 자유, 인내, 인간의 존엄."},
@@ -143,7 +143,7 @@ FILMS = [
      "description": "가위 손을 가진 인조인간이 마을에서 겪는 사랑과 거부. 외로움, 순수함, 거절, 다름에 대한 공포."},
     {"title": "척의 일생", "title_en": "Chuck", "year": 2016, "director": "필립 팔라르도", "recommender": "maybe_caillou", "note": "요 근래 본 것 중에서는 제일 좋았습니다",
      "description": "헤비급 챔피언 무하마드 알리에게 도전한 무명 복서 척 웹너의 실화. 끈기, 자존감, 평범한 사람의 위대함, 영화 록키의 실제 모델."},
-    {"title": "화양연화", "title_en": "In the Mood for Love", "year": 2000, "director": "왕가위", "recommender": "yunjeongeom778",
+    {"title": "화양연화", "title_en": "In the Mood for Love", "year": 2000, "director": "왕가위", "recommender": "yunjeongeom778 / chris_chang_arong",
      "description": "1960년대 홍콩, 배우자의 불륜을 알게 된 두 이웃이 서로에게 끌리면서도 선을 넘지 않는 이야기. 그리움, 절제, 시간, 이루어지지 못한 사랑."},
     {"title": "루빙화", "title_en": "Lu Bing Hua", "year": 1989, "director": "양리궈", "recommender": "zlexygirlz", "note": "대만영화인데 아직도 기억에남아요",
      "description": "시골 마을의 가난한 소년이 뛰어난 그림 재능을 가졌지만 인정받지 못하고 병으로 떠나는 이야기. 순수함, 재능, 가난, 슬픔, 어린 시절의 꿈."},
@@ -157,6 +157,112 @@ FILMS = [
      "description": "맹인 퇴역 군인과 아르바이트 학생이 함께 떠나는 여행. 존엄, 용기, 정의, 삶의 의미, 탱고."},
     {"title": "어둠 속의 댄서", "title_en": "Dancer in the Dark", "year": 2000, "director": "라스 폰 트리에", "recommender": "actressj76",
      "description": "시력을 잃어가는 이민자 여성이 아들의 수술비를 위해 모든 것을 희생하는 뮤지컬 비극. 희생, 모성, 불의, 음악과 현실."},
+
+    # ── chris_chang_arong 추천 — 홍콩 ──
+    {"title": "중경삼림", "title_en": "Chungking Express", "year": 1994, "director": "왕가위", "recommender": "chris_chang_arong / guitar.90", "note": "양조위 주연 영화는 그냥 보세요",
+     "description": "홍콩의 두 경찰관이 각자의 실연을 겪으며 새로운 인연을 만나는 두 편의 이야기. 외로움, 우연, 도시의 감성, 시간과 기억."},
+    {"title": "해피 투게더", "title_en": "Happy Together", "year": 1997, "director": "왕가위", "recommender": "chris_chang_arong", "note": "양조위 주연",
+     "description": "부에노스아이레스에서 다시 시작하려는 홍콩 남자 커플의 사랑과 파탄. 외로움, 집착, 이국땅에서의 방황, 돌아갈 수 없는 관계."},
+    {"title": "타락천사", "title_en": "Fallen Angels", "year": 1995, "director": "왕가위", "recommender": "chris_chang_arong", "note": "양조위 주연",
+     "description": "홍콩 밤거리의 킬러와 그의 파트너, 그리고 벙어리 청년의 엇갈리는 이야기. 고독, 도시의 밤, 연결되지 못하는 사람들."},
+    {"title": "일대종사", "title_en": "The Grandmaster", "year": 2013, "director": "왕가위", "recommender": "chris_chang_arong",
+     "description": "엽문의 일대기를 통해 그린 무술과 사랑, 시대의 변화. 무협, 절제된 감정, 이루어지지 못한 사랑, 장인 정신."},
+    {"title": "무간도", "title_en": "Infernal Affairs", "year": 2002, "director": "유위강 / 맥조휘", "recommender": "chris_chang_arong", "note": "양조위 주연",
+     "description": "경찰에 잠입한 조직원과 조직에 잠입한 경찰의 정체성 위기. 이중생활, 배신, 정체성, 누가 진짜인가."},
+
+    # ── chris_chang_arong 추천 — 중국 ──
+    {"title": "마지막 황제", "title_en": "The Last Emperor", "year": 1987, "director": "베르나르도 베르톨루치", "recommender": "chris_chang_arong", "note": "배경이 중국",
+     "description": "청나라 마지막 황제 푸이의 일대기. 자금성에서의 고립된 어린 시절부터 전범 수용소까지. 권력, 고립, 역사의 소용돌이, 정체성."},
+    {"title": "연인", "title_en": "House of Flying Daggers", "year": 2004, "director": "장이머우", "recommender": "chris_chang_arong",
+     "description": "당나라 말기, 비밀 조직과 관군 사이에서 펼쳐지는 사랑과 배신의 무협 로맨스. 아름다운 영상미, 삼각관계, 충성과 사랑의 갈등."},
+    {"title": "영웅", "title_en": "Hero", "year": 2002, "director": "장이머우", "recommender": "chris_chang_arong",
+     "description": "진시황을 암살하려는 자객의 이야기를 여러 시점으로 풀어낸 무협 대서사. 희생, 대의, 색채의 미학, 하나의 진실."},
+    {"title": "5일의 마중", "title_en": "Coming Home", "year": 2014, "director": "장이머우", "recommender": "chris_chang_arong",
+     "description": "문화대혁명 후 석방된 남편이 돌아왔지만 아내는 기억을 잃었다. 매일 역으로 남편을 마중 나가는 아내의 이야기. 기억, 상실, 기다림, 사랑."},
+
+    # ── chris_chang_arong 추천 — 할리우드 ──
+    {"title": "사랑의 블랙홀", "title_en": "Groundhog Day", "year": 1993, "director": "해럴드 레이미스", "recommender": "chris_chang_arong", "note": "코미디멜로 교과서",
+     "description": "같은 날을 무한 반복하는 기상캐스터가 자기 변화를 통해 사랑을 찾는 코미디. 반복, 성장, 이기심에서 이타심으로."},
+    {"title": "트루먼 쇼", "title_en": "The Truman Show", "year": 1998, "director": "피터 위어", "recommender": "chris_chang_arong",
+     "description": "자신의 인생 전체가 TV 쇼였음을 깨달은 남자의 탈출. 자유의지, 감시, 진짜 삶이란 무엇인가, 용기."},
+    {"title": "로건", "title_en": "Logan", "year": 2017, "director": "제임스 맨골드", "recommender": "chris_chang_arong", "note": "마블 중 최고라고 봄",
+     "description": "늙고 지친 울버린이 어린 뮤턴트를 지키며 마지막 여정을 떠나는 이야기. 노화, 희생, 아버지의 사랑, 영웅의 끝."},
+    {"title": "노인을 위한 나라는 없다", "title_en": "No Country for Old Men", "year": 2007, "director": "코엔 형제", "recommender": "chris_chang_arong",
+     "description": "텍사스 사막에서 우연히 마약 거래 돈을 발견한 남자를 쫓는 살인마. 운명, 폭력, 도덕의 부재, 통제할 수 없는 세상."},
+    {"title": "유주얼 서스펙트", "title_en": "The Usual Suspects", "year": 1995, "director": "브라이언 싱어", "recommender": "chris_chang_arong",
+     "description": "다섯 범죄자가 모인 사건의 전말을 한 생존자가 증언하는 이야기. 반전, 기만, 누가 카이저 소제인가, 서사의 함정."},
+    {"title": "히트", "title_en": "Heat", "year": 1995, "director": "마이클 만", "recommender": "chris_chang_arong",
+     "description": "프로 은행 강도와 그를 쫓는 형사의 대결. 둘 다 자신의 일에 모든 것을 건 남자들. 집착, 고독, 프로의식, LA의 밤."},
+    {"title": "LA 컨피덴셜", "title_en": "L.A. Confidential", "year": 1997, "director": "커티스 핸슨", "recommender": "chris_chang_arong",
+     "description": "1950년대 LA 경찰 내부의 부패와 살인 사건을 파헤치는 세 형사. 부패, 정의, 외면, 누아르."},
+    {"title": "겟 아웃", "title_en": "Get Out", "year": 2017, "director": "조던 필", "recommender": "chris_chang_arong",
+     "description": "흑인 청년이 백인 여자친구의 가족을 방문하며 발견하는 소름 끼치는 비밀. 인종, 공포, 사회 풍자, 미소 뒤의 악의."},
+    {"title": "A.I.", "title_en": "A.I. Artificial Intelligence", "year": 2001, "director": "스티븐 스필버그", "recommender": "chris_chang_arong",
+     "description": "엄마의 사랑을 갈구하는 인공지능 소년의 여정. 사랑, 존재의 의미, 인간과 기계의 경계, 영원한 기다림."},
+    {"title": "블레이드 러너", "title_en": "Blade Runner", "year": 1982, "director": "리들리 스콧", "recommender": "chris_chang_arong", "note": "해리슨 포드",
+     "description": "미래 LA에서 탈주한 인조인간을 쫓는 형사의 이야기. 인간이란 무엇인가, 기억, 죽음, 비 내리는 디스토피아."},
+    {"title": "폭풍 속으로", "title_en": "Point Break", "year": 1991, "director": "캐서린 비글로", "recommender": "chris_chang_arong", "note": "키아누 리브스",
+     "description": "서퍼 은행 강도단에 잠입한 FBI 요원이 리더와 우정을 쌓게 되는 이야기. 자유, 아드레날린, 충성의 딜레마."},
+    {"title": "로드하우스", "title_en": "Road House", "year": 1989, "director": "로위 헤릭", "recommender": "chris_chang_arong", "note": "패트릭 스웨이지",
+     "description": "철학 학위를 가진 바운서가 시골 바를 정리하며 마을의 악당과 맞서는 이야기. 액션, 남성성, 정의, 80년대 액션의 정수."},
+    {"title": "위플래쉬", "title_en": "Whiplash", "year": 2014, "director": "데이미언 셔젤", "recommender": "chris_chang_arong",
+     "description": "최고의 드러머가 되려는 학생과 그를 극한까지 밀어붙이는 교수의 대결. 집착, 완벽주의, 학대와 성장의 경계, 피와 땀."},
+    {"title": "매트릭스", "title_en": "The Matrix", "year": 1999, "director": "워쇼스키 자매", "recommender": "chris_chang_arong",
+     "description": "현실이 시뮬레이션임을 깨달은 해커가 인류를 해방시키기 위해 싸우는 이야기. 현실, 선택, 각성, 혁명적 SF."},
+    {"title": "글래디에이터", "title_en": "Gladiator", "year": 2000, "director": "리들리 스콧", "recommender": "chris_chang_arong",
+     "description": "로마 장군에서 노예 검투사로 전락한 남자의 복수와 명예 회복. 복수, 명예, 가족, 로마의 영광과 타락."},
+    {"title": "스타 이즈 본", "title_en": "A Star Is Born", "year": 2018, "director": "브래들리 쿠퍼", "recommender": "chris_chang_arong",
+     "description": "하락하는 뮤지션과 떠오르는 신인 가수의 사랑과 파멸. 재능, 중독, 사랑, 명성의 대가."},
+
+    # ── chris_chang_arong 추천 — 일본 ──
+    {"title": "철도원", "title_en": "Railroad Man", "year": 1999, "director": "고사쿠 후루하타", "recommender": "chris_chang_arong",
+     "description": "은퇴를 앞둔 외딴 역의 철도원이 지나온 인생을 돌아보는 이야기. 고독, 헌신, 후회, 일본 시골의 정서."},
+    {"title": "지금 만나러 갑니다", "title_en": "Be with You", "year": 2004, "director": "도이 노부히로", "recommender": "chris_chang_arong",
+     "description": "죽은 아내가 장마철에 돌아와 남편과 아들과 함께 지내는 기적 같은 이야기. 사랑, 기억, 이별, 기적."},
+    {"title": "세상의 중심에서 사랑을 외치다", "title_en": "Crying Out Love in the Center of the World", "year": 2004, "director": "유키사다 이사오", "recommender": "chris_chang_arong",
+     "description": "백혈병으로 세상을 떠난 첫사랑을 회상하는 남자의 이야기. 첫사랑, 상실, 기억, 순수한 사랑."},
+    {"title": "소나티네", "title_en": "Sonatine", "year": 1993, "director": "기타노 다케시", "recommender": "chris_chang_arong",
+     "description": "오키나와로 보내진 야쿠자 조직원들이 해변에서 보내는 기묘하게 평화로운 시간. 폭력과 고요, 삶의 무의미, 죽음에 대한 담담함."},
+    {"title": "하나비", "title_en": "Hana-bi", "year": 1997, "director": "기타노 다케시", "recommender": "chris_chang_arong",
+     "description": "아내가 시한부 선고를 받은 전직 형사가 마지막 여행을 떠나는 이야기. 폭력과 부드러움의 공존, 사랑, 죽음, 꽃과 불꽃."},
+    {"title": "7인의 사무라이", "title_en": "Seven Samurai", "year": 1954, "director": "구로사와 아키라", "recommender": "chris_chang_arong",
+     "description": "산적에게 약탈당하는 마을을 지키기 위해 모인 일곱 사무라이의 이야기. 의리, 희생, 계급, 전투, 영화사의 걸작."},
+    {"title": "할복", "title_en": "Harakiri", "year": 1962, "director": "고바야시 마사키", "recommender": "chris_chang_arong",
+     "description": "에도 시대, 할복을 청하러 온 낭인이 사무라이 제도의 위선을 폭로하는 이야기. 명예, 위선, 시스템에 대한 저항, 비극."},
+    {"title": "어느 가족", "title_en": "Shoplifters", "year": 2018, "director": "고레에다 히로카즈", "recommender": "chris_chang_arong",
+     "description": "좀도둑질로 생계를 유지하는 가짜 가족이 버려진 소녀를 거두며 벌어지는 이야기. 가족이란 무엇인가, 빈곤, 사랑, 유대."},
+    {"title": "걸어도 걸어도", "title_en": "Still Walking", "year": 2008, "director": "고레에다 히로카즈", "recommender": "chris_chang_arong",
+     "description": "기일에 모인 가족이 하루를 보내며 드러나는 미묘한 감정들. 가족, 후회, 시간의 흐름, 말하지 못한 것들."},
+    {"title": "조제, 호랑이 그리고 물고기들", "title_en": "Josee, the Tiger and the Fish", "year": 2003, "director": "이누도 잇신", "recommender": "chris_chang_arong",
+     "description": "장애를 가진 소녀 조제와 대학생 청년의 사랑 이야기. 순수함, 자유, 성장, 사랑의 현실."},
+    {"title": "키쿠지로의 여름", "title_en": "Kikujiro", "year": 1999, "director": "기타노 다케시", "recommender": "chris_chang_arong",
+     "description": "거친 아저씨와 엄마를 찾아 떠나는 소년의 여름 여행. 우정, 순수함, 유머, 어른이 되지 못한 어른."},
+    {"title": "행복 목욕탕", "title_en": "Happy Bathing", "year": 2010, "director": "—", "recommender": "chris_chang_arong",
+     "description": "작은 동네 목욕탕을 둘러싼 사람들의 따뜻한 일상 이야기. 공동체, 소소한 행복, 일본 서민의 삶."},
+    {"title": "양지의 그녀", "title_en": "Girl in the Sunny Place", "year": 2013, "director": "미키 다카히로", "recommender": "chris_chang_arong",
+     "description": "밝고 활발한 여자친구와의 행복한 나날 뒤에 숨겨진 비밀. 사랑, 비밀, 슬픔, 판타지와 현실의 경계."},
+    {"title": "그렇게 아버지가 된다", "title_en": "Like Father, Like Son", "year": 2013, "director": "고레에다 히로카즈", "recommender": "chris_chang_arong",
+     "description": "출생 시 뒤바뀐 아이를 6년 뒤 알게 된 두 가족의 선택. 혈연과 양육, 아버지란 무엇인가, 가족의 의미."},
+    {"title": "퀼", "title_en": "Quill: The Life of a Guide Dog", "year": 2004, "director": "사키 요이치", "recommender": "chris_chang_arong", "note": "동물 좋아해? 꼭 봐!",
+     "description": "안내견 퀼의 태어남부터 죽음까지의 일생. 헌신, 유대, 동물과 인간의 교감, 잔잔한 감동."},
+    {"title": "용의자 X의 헌신", "title_en": "Suspect X", "year": 2008, "director": "니시타니 히로시", "recommender": "chris_chang_arong",
+     "description": "천재 수학자가 사랑하는 여인을 지키기 위해 완벽한 알리바이를 만들어내는 이야기. 헌신, 천재의 고독, 희생적 사랑."},
+
+    # ── tak.ih_ 추천 ──
+    {"title": "더 리더: 책 읽어주는 남자", "title_en": "The Reader", "year": 2008, "director": "스티븐 달드리", "recommender": "tak.ih_",
+     "description": "소년 시절 나이 많은 여인과 사랑에 빠진 남자가 훗날 그녀의 전범 재판을 목격하는 이야기. 죄의식, 비밀, 문해력, 사랑과 도덕."},
+    {"title": "피아니스트", "title_en": "The Pianist", "year": 2002, "director": "로만 폴란스키", "recommender": "tak.ih_",
+     "description": "나치 점령 하 바르샤바에서 생존한 유대인 피아니스트의 실화. 생존, 예술, 전쟁의 잔혹함, 인간의 존엄."},
+
+    # ── moment_.light 추천 ──
+    {"title": "국보", "title_en": "Kokuho", "year": 2025, "director": "이상일", "recommender": "moment_.light", "note": "가부키를 소재로 한 일본 실사 영화, 일본에서 1200만 관객 돌파",
+     "description": "가부키 명문가의 후계자가 예술과 욕망, 운명 사이에서 갈등하는 이야기. 전통 예술, 집착, 재능, 일본 가부키의 세계."},
+
+    # ── guitar.90 추천 ──
+    {"title": "바그다드 카페", "title_en": "Bagdad Cafe", "year": 1987, "director": "퍼시 애들론", "recommender": "guitar.90",
+     "description": "사막 한가운데 허름한 모텔에 독일 여성이 나타나며 변화하는 사람들의 이야기. 외로움, 우정, 이방인, 마법 같은 일상."},
+    {"title": "일일시호일", "title_en": "Every Day a Good Day", "year": 2018, "director": "오모리 다쓰시", "recommender": "guitar.90",
+     "description": "24년간 다도를 배우며 계절과 삶의 의미를 깨달아가는 여성의 이야기. 다도, 계절, 성장, 소소한 깨달음, 일본의 미학."},
 ]
 
 
@@ -179,15 +285,25 @@ def get_embeddings(texts: list[str]) -> list[list[float]]:
     # 배치로 처리 (Gemini는 한 번에 최대 100개)
     from google.genai import types
 
-    result = client.models.embed_content(
-        model="gemini-embedding-001",
-        contents=texts,
-        config=types.EmbedContentConfig(
-            task_type="CLUSTERING",
-            output_dimensionality=768,
-        ),
-    )
-    return [e.values for e in result.embeddings]
+    import time
+    all_vectors = []
+    batch_size = 100
+    for i in range(0, len(texts), batch_size):
+        if i > 0:
+            print("     60초 대기 중 (API 요청 한도)...")
+            time.sleep(60)
+        batch = texts[i:i + batch_size]
+        print(f"     배치 {i // batch_size + 1}: {len(batch)}편 처리 중...")
+        result = client.models.embed_content(
+            model="gemini-embedding-001",
+            contents=batch,
+            config=types.EmbedContentConfig(
+                task_type="CLUSTERING",
+                output_dimensionality=768,
+            ),
+        )
+        all_vectors.extend([e.values for e in result.embeddings])
+    return all_vectors
 
 
 def reduce_to_2d(vectors: list[list[float]]) -> np.ndarray:
