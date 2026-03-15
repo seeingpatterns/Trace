@@ -573,6 +573,27 @@ function buildConstellation() {
     f.nz = (Math.random() - 0.5) * 0.15;
   });
 
+  // 겹치는 별 분리: 최소 거리 0.05 보장
+  const MIN_DIST = 0.05;
+  for (let i = 0; i < films.length; i++) {
+    for (let j = i + 1; j < films.length; j++) {
+      const dx = films[j].nx - films[i].nx;
+      const dy = films[j].ny - films[i].ny;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < MIN_DIST && d > 0) {
+        const push = (MIN_DIST - d) / 2;
+        const nx = dx / d, ny = dy / d;
+        films[i].nx -= nx * push;
+        films[i].ny -= ny * push;
+        films[j].nx += nx * push;
+        films[j].ny += ny * push;
+      } else if (d === 0) {
+        films[j].nx += MIN_DIST * 0.5;
+        films[j].ny += MIN_DIST * 0.5;
+      }
+    }
+  }
+
   filmPositions3D = films.map(f => new THREE.Vector3(f.nx, f.ny, f.nz));
 
   // ── 연결선 (CodePen의 Line 구조 — 같은 클러스터 + 거리 기반) ──
