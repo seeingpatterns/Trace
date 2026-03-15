@@ -225,6 +225,55 @@
     animation: pulse 1.5s ease infinite;
   }
   @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+  /* ── 내 별 찾기 패널 ── */
+  .find-panel {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%); z-index: 150;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .find-panel input {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 3px;
+    color: #e8e4df;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 300;
+    padding: 8px 16px; width: 200px; outline: none;
+    backdrop-filter: blur(8px);
+    transition: border-color 0.3s;
+    letter-spacing: 0.3px;
+  }
+  .find-panel input::placeholder { color: #555; }
+  .find-panel input:focus { border-color: #1EE3CF; }
+
+  .find-panel button {
+    background: rgba(30, 227, 207, 0.15);
+    border: 1px solid rgba(30, 227, 207, 0.3);
+    border-radius: 3px;
+    color: #1EE3CF;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    font-size: 12px; font-weight: 500;
+    padding: 8px 16px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+  .find-panel button:hover {
+    background: rgba(30, 227, 207, 0.25);
+    border-color: #1EE3CF;
+  }
+
+  .find-panel .reset-btn {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+    color: #7a7670;
+    display: none;
+  }
+  .find-panel .reset-btn:hover {
+    color: #e8e4df;
+    background: rgba(255,255,255,0.1);
+  }
 </style>
 </head>
 <body>
@@ -247,6 +296,12 @@
 <div class="legend" id="legend"></div>
 <div class="counter" id="counter">51 films</div>
 <div class="hint">drag to rotate · scroll to zoom</div>
+
+<div class="find-panel" id="find-panel">
+  <input type="text" id="find-input" placeholder="내 아이디를 입력하세요" autocomplete="off">
+  <button id="find-btn" onclick="findMyStars()">내 별 찾기</button>
+  <button class="reset-btn" id="reset-btn" onclick="resetStars()">초기화</button>
+</div>
 
 <div class="film-card" id="card">
   <div class="card-year" id="card-year"></div>
@@ -810,6 +865,83 @@ function positionCard(mx, my) {
   card.style.left = left + 'px';
   card.style.top = top + 'px';
 }
+
+// ═══════════════════════════════════════════════
+// 내 별 찾기 기능
+// ═══════════════════════════════════════════════
+function findMyStars() {
+  const input = document.getElementById('find-input').value.trim().toLowerCase().replace(/^@/, '');
+  if (!input) return;
+
+  // 유저 영화 찾기
+  userFilmIndices = [];
+  films.forEach((f, i) => {
+    const recommenders = f.recommender.toLowerCase().split(/\s*\/\s*/);
+    if (recommenders.some(r => r.trim() === input)) {
+      userFilmIndices.push(i);
+    }
+  });
+
+  if (userFilmIndices.length === 0) {
+    const banner = document.getElementById('treasure-banner');
+    banner.style.display = 'block';
+    banner.innerHTML = `<span class="user-name">@${input}</span> 님의 추천 영화를 찾지 못했어요`;
+    setTimeout(() => { banner.style.display = 'none'; }, 3000);
+    return;
+  }
+
+  // 배너 표시
+  const banner = document.getElementById('treasure-banner');
+  banner.style.display = 'block';
+  const titles = userFilmIndices.map(i => films[i].title).join(', ');
+  banner.innerHTML = `<span class="user-name">@${input}</span> 님이 추천한 영화 <span class="found-count">${userFilmIndices.length}</span>편이 빛나고 있어요!<br><small style="opacity:0.7">${titles}</small>`;
+
+  // 노드 비주얼 업데이트
+  updateNodeVisuals();
+
+  // 유저 영화에 스파클 폭발
+  userFilmIndices.forEach(idx => {
+    const color = COLORS[films[idx].cluster % COLORS.length];
+    for (let j = 0; j < 20; j++) {
+      const spark = new Sparkle();
+      spark.setup(filmPositions3D[idx], new THREE.Color('#ffffff'));
+      sparkles.push(spark);
+    }
+  });
+
+  // UI 업데이트
+  document.getElementById('reset-btn').style.display = 'inline-block';
+  document.getElementById('find-input').style.borderColor = '#1EE3CF';
+}
+
+function resetStars() {
+  userFilmIndices = [];
+  document.getElementById('treasure-banner').style.display = 'none';
+  document.getElementById('reset-btn').style.display = 'none';
+  document.getElementById('find-input').value = '';
+  document.getElementById('find-input').style.borderColor = '';
+  updateNodeVisuals();
+}
+
+function updateNodeVisuals() {
+  if (!filmNodePoints) return;
+  const colArr = [], sizeArr = [];
+  films.forEach((f, i) => {
+    const c = COLORS[f.cluster % COLORS.length];
+    const isUserFilm = userFilmIndices.length > 0 && userFilmIndices.includes(i);
+    const isDimmed = userFilmIndices.length > 0 && !isUserFilm;
+    const mult = isDimmed ? 0.12 : isUserFilm ? 1.5 : 1.0;
+    colArr.push(c.r * mult, c.g * mult, c.b * mult);
+    sizeArr.push((isUserFilm ? 9 : isDimmed ? 3 : 5) * pixelRatio);
+  });
+  filmNodePoints.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colArr, 3));
+  filmNodePoints.geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizeArr, 1));
+}
+
+// Enter 키로 검색
+document.getElementById('find-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') findMyStars();
+});
 
 // ═══════════════════════════════════════════════
 // 렌더 루프 (CodePen 구조)
