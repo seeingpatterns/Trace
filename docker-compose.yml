@@ -1,0 +1,46 @@
+# 로컬 개발용: backend + db만 컨테이너에서 실행
+# frontend는 로컬에서 npm run dev (Vite)로 실행
+#
+# 사용법:
+#   docker compose up -d
+#   docker compose down
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: trace-db
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: trace
+    ports:
+      - "5433:5432"   # 호스트 5433 (다른 프로젝트가 5432 사용 중)
+    volumes:
+      - trace_db_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d trace"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: trace-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://dev:dev@db:5432/trace
+    ports:
+      - "3001:3000"   # 호스트 3001 → 컨테이너 3000 (Psychpaper이 3000 사용 중)
+    volumes:
+      - ./backend:/app
+      - /app/node_modules  # 로컬 node_modules 제외 (컨테이너 내부 것 사용)
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  trace_db_data:

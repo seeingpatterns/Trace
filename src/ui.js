@@ -5,7 +5,7 @@ import {
   camera, group, composer, renderer, bloomPass,
   filmNodePoints, filmPositions3D, sparkles,
   Sparkle, pixelRatio,
-  handleResize, setDragging,
+  handleResize, setDragging, setHighlightedFilms,
 } from './scene.js';
 
 // ═══════════════════════════════════════════════
@@ -268,8 +268,9 @@ function findMyStars(films) {
   const titles = userFilmIndices.map(i => films[i].title).join(', ');
   banner.innerHTML = `<span class="user-name">@${input}</span> 님이 추천한 영화 <span class="found-count">${userFilmIndices.length}</span>편이 빛나고 있어요!<br><small style="opacity:0.7">${titles}</small>`;
 
-  // 노드 비주얼 업데이트
+  // 노드 비주얼 업데이트 + 펄스 효과 활성화
   updateNodeVisuals(films);
+  setHighlightedFilms(userFilmIndices);
 
   // 유저 영화에 스파클 폭발
   userFilmIndices.forEach(idx => {
@@ -292,6 +293,7 @@ function findMyStars(films) {
 
 function resetStars(films) {
   userFilmIndices = [];
+  setHighlightedFilms([]);
   document.getElementById('treasure-banner').style.display = 'none';
   document.getElementById('reset-btn').style.display = 'none';
   document.getElementById('find-input').value = '';

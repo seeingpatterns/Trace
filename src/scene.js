@@ -199,6 +199,11 @@ scene.add(galaxyPoints);
 let filmNodePoints = null;
 let filmPositions3D = [];
 const lines = [];
+let _userFilmIndices = [];
+
+function setHighlightedFilms(indices) {
+  _userFilmIndices = indices;
+}
 
 // ═══════════════════════════════════════════════
 // buildConstellation — 성좌 생성
@@ -396,6 +401,17 @@ function render(a) {
   stars.forEach(s => { s.update(); tempStars.push(s.x, s.y, s.z); });
   starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(tempStars, 3));
 
+  // 찾은 별 펄스 효과
+  if (_userFilmIndices.length > 0 && filmNodePoints) {
+    const sizes = filmNodePoints.geometry.attributes.size;
+    const pulse = Math.sin(a * 0.004) * 0.5 + 0.5; // 0~1 반복
+    for (let i = 0; i < _userFilmIndices.length; i++) {
+      const idx = _userFilmIndices[i];
+      sizes.array[idx] = (7 + pulse * 8) * pixelRatio; // 7~15 사이 반짝
+    }
+    sizes.needsUpdate = true;
+  }
+
   composer.render();
 }
 
@@ -428,6 +444,6 @@ export {
   scene, camera, renderer, composer, group, bloomPass,
   filmNodePoints, filmPositions3D, sparkles, sparklesMaterial,
   Sparkle, pixelRatio,
-  buildConstellation, startRender, handleResize, setDragging,
+  buildConstellation, startRender, handleResize, setDragging, setHighlightedFilms,
   lines, starsGeometry, sparklesGeometry, galaxyPoints, stars,
 };
