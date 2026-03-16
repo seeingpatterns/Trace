@@ -42,6 +42,26 @@
   <div class="card-meta" id="card-meta"></div>
   <div class="card-desc" id="card-desc"></div>
   <div class="card-note" id="card-note"></div>
+  <div class="card-review" id="card-review"></div>
+  <button class="card-review-btn" id="card-review-btn">감상평 쓰기</button>
+  <div class="card-comments" id="card-comments"></div>
+  <div class="card-comment-form" id="card-comment-form" style="display:none">
+    <textarea id="comment-textarea" placeholder="답글을 남겨주세요..." rows="2"></textarea>
+    <button id="comment-submit-btn">답글 달기</button>
+  </div>
+</div>
+
+<div class="review-modal" id="review-modal">
+  <div class="review-modal-content">
+    <div class="review-modal-title" id="review-modal-title"></div>
+    <textarea id="review-textarea" placeholder="감상평을 적어주세요..." rows="5"></textarea>
+    <input type="password" id="review-password" placeholder="비밀번호">
+    <div class="review-modal-actions">
+      <button id="review-submit-btn">저장</button>
+      <button id="review-cancel-btn" class="cancel">취소</button>
+    </div>
+    <div class="review-modal-error" id="review-modal-error"></div>
+  </div>
 </div>
 
 <script type="module" src="/src/main.js"></script>

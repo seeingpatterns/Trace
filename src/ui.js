@@ -22,6 +22,14 @@ let dragStart = { x: 0, y: 0 };
 let userFilmIndices = [];
 export function setUserFilmIndices(indices) { userFilmIndices = indices; }
 
+let _reviewsMap = {};
+export function setReviewsMap(map) { _reviewsMap = map; }
+
+let _activeThreadId = '';
+let _currentFilmTitleEn = '';
+
+const API_BASE = 'http://localhost:3001';
+
 // ═══════════════════════════════════════════════
 // Raycaster
 // ═══════════════════════════════════════════════
@@ -221,6 +229,50 @@ function updateCard(mx, my, films) {
   if (f.note) { noteEl.textContent = f.note; noteEl.style.display = 'block'; }
   else { noteEl.style.display = 'none'; }
 
+  // 감상평 표시
+  const reviewEl = document.getElementById('card-review');
+  const reviewBtn = document.getElementById('card-review-btn');
+  const review = _reviewsMap[f.title_en];
+  if (review) {
+    reviewEl.textContent = review.content;
+    reviewEl.style.display = 'block';
+    reviewBtn.style.display = 'none';
+  } else {
+    reviewEl.style.display = 'none';
+    reviewBtn.style.display = 'inline-block';
+  }
+
+  // 댓글 표시
+  const commentsEl = document.getElementById('card-comments');
+  const commentForm = document.getElementById('card-comment-form');
+  commentsEl.innerHTML = '';
+  commentForm.style.display = 'none';
+
+  if (review) {
+    // 댓글 비동기 로드
+    fetch(`${API_BASE}/api/reviews/${encodeURIComponent(f.title_en)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.comments && data.comments.length > 0) {
+          data.comments.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'comment-item';
+            div.innerHTML = `<span class="comment-author">@${c.author_thread_id}</span> ${c.body}`;
+            commentsEl.appendChild(div);
+          });
+        }
+      })
+      .catch(() => {});
+
+    // 추천인 본인 영화면 댓글 폼 표시
+    if (_activeThreadId) {
+      const recommenders = f.recommender.toLowerCase().split(/\s*\/\s*/);
+      if (recommenders.some(r => r.trim() === _activeThreadId)) {
+        commentForm.style.display = 'block';
+      }
+    }
+  }
+
   positionCard(mx, my);
   card.classList.add('visible');
 }
@@ -244,6 +296,8 @@ function positionCard(mx, my) {
 function findMyStars(films) {
   const input = document.getElementById('find-input').value.trim().toLowerCase().replace(/^@/, '');
   if (!input) return;
+
+  _activeThreadId = input;
 
   // 유저 영화 찾기
   userFilmIndices = [];
@@ -293,6 +347,7 @@ function findMyStars(films) {
 
 function resetStars(films) {
   userFilmIndices = [];
+  _activeThreadId = '';
   setHighlightedFilms([]);
   document.getElementById('treasure-banner').style.display = 'none';
   document.getElementById('reset-btn').style.display = 'none';
@@ -321,7 +376,94 @@ function updateNodeVisuals(films) {
 }
 
 // ═══════════════════════════════════════════════
+// 감상평 모달
+// ═══════════════════════════════════════════════
+
+function openReviewModal(filmTitleEn, filmTitle) {
+  _currentFilmTitleEn = filmTitleEn;
+  document.getElementById('review-modal-title').textContent = filmTitle;
+  document.getElementById('review-textarea').value = '';
+  document.getElementById('review-password').value = '';
+  document.getElementById('review-modal-error').style.display = 'none';
+  document.getElementById('review-modal').classList.add('open');
+}
+
+function closeReviewModal() {
+  document.getElementById('review-modal').classList.remove('open');
+}
+
+async function submitReview() {
+  const content = document.getElementById('review-textarea').value.trim();
+  const password = document.getElementById('review-password').value;
+  const errorEl = document.getElementById('review-modal-error');
+
+  if (!content) { errorEl.textContent = '감상평을 입력하세요'; errorEl.style.display = 'block'; return; }
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ film_title_en: _currentFilmTitleEn, content, password }),
+    });
+    if (!resp.ok) {
+      const err = await resp.json();
+      errorEl.textContent = err.error; errorEl.style.display = 'block';
+      return;
+    }
+    const review = await resp.json();
+    _reviewsMap[_currentFilmTitleEn] = review;
+    closeReviewModal();
+  } catch {
+    errorEl.textContent = '서버 연결 실패'; errorEl.style.display = 'block';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 댓글 제출
+// ═══════════════════════════════════════════════
+
+async function submitComment(reviewId, films) {
+  const body = document.getElementById('comment-textarea').value.trim();
+  if (!body || !_activeThreadId) return;
+  try {
+    const resp = await fetch(`${API_BASE}/api/reviews/${reviewId}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ author_thread_id: _activeThreadId, body }),
+    });
+    if (resp.ok) {
+      document.getElementById('comment-textarea').value = '';
+      // 카드 갱신
+      if (hoveredIdx >= 0) updateCard(0, 0, films);
+    }
+  } catch { /* 무시 */ }
+}
+
+// ═══════════════════════════════════════════════
+// 모달/댓글 이벤트 바인딩
+// ═══════════════════════════════════════════════
+
+function bindReviewEvents(films) {
+  document.getElementById('card-review-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const f = films[hoveredIdx];
+    if (f) openReviewModal(f.title_en, f.title);
+  });
+  document.getElementById('review-cancel-btn').addEventListener('click', closeReviewModal);
+  document.getElementById('review-submit-btn').addEventListener('click', submitReview);
+  document.getElementById('review-modal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeReviewModal();
+  });
+  document.getElementById('comment-submit-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const f = films[hoveredIdx];
+    const review = f ? _reviewsMap[f.title_en] : null;
+    if (review) submitComment(review.id, films);
+  });
+}
+
+// ═══════════════════════════════════════════════
 // Exports
 // ═══════════════════════════════════════════════
 
-export { buildLegend, bindEvents, findMyStars, resetStars };
+export { buildLegend, bindEvents, findMyStars, resetStars, bindReviewEvents };

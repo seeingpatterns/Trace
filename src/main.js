@@ -1,10 +1,12 @@
 import '../style.css';
-import { loadFilms } from './data.js';
+import { loadFilms, loadReviews } from './data.js';
 import { buildConstellation, startRender } from './scene.js';
-import { buildLegend, bindEvents, setUserFilmIndices, findMyStars, resetStars } from './ui.js';
+import { buildLegend, bindEvents, setUserFilmIndices, setReviewsMap, findMyStars, resetStars, bindReviewEvents } from './ui.js';
 
 async function init() {
   const films = await loadFilms();
+  const reviewsMap = await loadReviews();
+  setReviewsMap(reviewsMap);
 
   // URL 파라미터 보물찾기
   const urlParams = new URLSearchParams(window.location.search);
@@ -36,6 +38,7 @@ async function init() {
   buildConstellation(films, highlightUser, userFilmIndices);
   buildLegend(films);
   bindEvents(films);
+  bindReviewEvents(films);
 
   // find-panel 버튼 이벤트 바인딩 (index.html의 onclick은 전역 함수를 참조하므로 여기서 바인딩)
   document.getElementById('find-btn').addEventListener('click', () => findMyStars(films));

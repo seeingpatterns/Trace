@@ -102,6 +102,21 @@ function generateDemoData() {
   return result;
 }
 
+const API_BASE = 'http://localhost:3001';
+
+export async function loadReviews() {
+  try {
+    const resp = await fetch(`${API_BASE}/api/reviews`);
+    if (!resp.ok) return {};
+    const reviews = await resp.json();
+    const map = {};
+    reviews.forEach(r => { map[r.film_title_en] = r; });
+    return map;
+  } catch {
+    return {};
+  }
+}
+
 export async function loadFilms() {
   try {
     const resp = await fetch('/films_embedded.json');

@@ -235,6 +235,109 @@
     background: rgba(255,255,255,0.1);
   }
 
+  /* ── 감상평 카드 영역 ── */
+  .card-review {
+    margin-top: 10px; font-size: 12px; line-height: 1.7;
+    color: #1EE3CF; opacity: 0.9;
+    border-top: 1px solid rgba(30, 227, 207, 0.15);
+    padding-top: 10px; display: none;
+  }
+  .card-review::before { content: '내 감상 — '; font-weight: 500; }
+
+  .card-review-btn {
+    margin-top: 8px; background: rgba(30, 227, 207, 0.1);
+    border: 1px solid rgba(30, 227, 207, 0.2); border-radius: 3px;
+    color: #1EE3CF; font-size: 11px; padding: 5px 12px;
+    cursor: pointer; display: none;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    pointer-events: auto;
+  }
+  .card-review-btn:hover { background: rgba(30, 227, 207, 0.2); }
+
+  /* ── 댓글 영역 ── */
+  .card-comments {
+    margin-top: 8px; font-size: 11px; color: #aaa69e;
+  }
+  .card-comments .comment-item {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .card-comments .comment-author {
+    color: #d4c5a9; font-weight: 500;
+  }
+
+  .card-comment-form { margin-top: 8px; pointer-events: auto; }
+  .card-comment-form textarea {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 3px;
+    color: #e8e4df; font-size: 11px; padding: 6px 8px;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    resize: none; outline: none;
+  }
+  .card-comment-form button {
+    margin-top: 4px; padding: 4px 10px; font-size: 10px;
+    background: rgba(30,227,207,0.1); border: 1px solid rgba(30,227,207,0.2);
+    border-radius: 3px; color: #1EE3CF; cursor: pointer;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+  }
+
+  /* ── 감상평 작성 모달 ── */
+  .review-modal {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.7); display: none;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .review-modal.open { display: flex; }
+
+  .review-modal-content {
+    background: rgba(8,8,18,0.95);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 3px; padding: 24px; width: 360px; max-width: 90vw;
+  }
+
+  .review-modal-title {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700; font-size: 15px; margin-bottom: 16px;
+  }
+
+  .review-modal textarea {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 3px;
+    color: #e8e4df; font-size: 13px; padding: 10px;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    resize: vertical; outline: none;
+  }
+  .review-modal textarea:focus { border-color: #1EE3CF; }
+
+  .review-modal input[type="password"] {
+    width: 100%; margin-top: 8px; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 3px;
+    color: #e8e4df; font-size: 13px; padding: 8px 10px;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    outline: none;
+  }
+  .review-modal input:focus { border-color: #1EE3CF; }
+
+  .review-modal-actions {
+    margin-top: 12px; display: flex; gap: 8px;
+  }
+  .review-modal-actions button {
+    padding: 8px 16px; border-radius: 3px; font-size: 12px;
+    cursor: pointer; border: 1px solid rgba(30,227,207,0.3);
+    background: rgba(30,227,207,0.15); color: #1EE3CF;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+  }
+  .review-modal-actions button:hover { background: rgba(30,227,207,0.25); }
+  .review-modal-actions button.cancel {
+    background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);
+    color: #7a7670;
+  }
+
+  .review-modal-error {
+    margin-top: 8px; font-size: 11px; color: #FF6B6B; display: none;
+  }
+
   /* ── 모바일 반응형 ── */
   @media (max-width: 768px) {
     .header { padding: 16px 16px; }
