@@ -37,7 +37,7 @@ app.get('/api/schema-check', async (req, res) => {
   try {
     const { rows } = await pool.query(`
       SELECT table_name FROM information_schema.tables
-      WHERE table_schema = 'public' AND table_name IN ('users', 'articles', 'comments')
+      WHERE table_schema = 'public' AND table_name IN ('users', 'reviews', 'comments')
       ORDER BY table_name
     `);
     const tables = rows.map((r) => r.table_name);
