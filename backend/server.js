@@ -69,6 +69,7 @@ app.post('/api/dev/seed-one-user', async (req, res) => {
 
 // GET /api/reviews — 전체 감상평 조회
 app.get('/api/reviews', async (req, res) => {
+  if (!pool) return res.status(503).json({ error: 'DB not configured' });
   try {
     const { rows } = await pool.query(
       'SELECT * FROM reviews ORDER BY created_at DESC'
@@ -81,6 +82,7 @@ app.get('/api/reviews', async (req, res) => {
 
 // GET /api/reviews/:film_title_en — 특정 영화 감상평 + 댓글
 app.get('/api/reviews/:film_title_en', async (req, res) => {
+  if (!pool) return res.status(503).json({ error: 'DB not configured' });
   try {
     const { rows: reviews } = await pool.query(
       'SELECT * FROM reviews WHERE film_title_en = $1',
@@ -100,6 +102,7 @@ app.get('/api/reviews/:film_title_en', async (req, res) => {
 
 // POST /api/reviews — 감상평 작성 (비밀번호 인증)
 app.post('/api/reviews', async (req, res) => {
+  if (!pool) return res.status(503).json({ error: 'DB not configured' });
   const { film_title_en, content, password } = req.body;
   if (password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
@@ -123,6 +126,7 @@ app.post('/api/reviews', async (req, res) => {
 
 // PUT /api/reviews/:id — 감상평 수정
 app.put('/api/reviews/:id', async (req, res) => {
+  if (!pool) return res.status(503).json({ error: 'DB not configured' });
   const { content, password } = req.body;
   if (password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
@@ -141,6 +145,7 @@ app.put('/api/reviews/:id', async (req, res) => {
 
 // POST /api/reviews/:id/comments — 댓글 작성
 app.post('/api/reviews/:id/comments', async (req, res) => {
+  if (!pool) return res.status(503).json({ error: 'DB not configured' });
   const { author_thread_id, body } = req.body;
   if (!author_thread_id || !body) {
     return res.status(400).json({ error: 'author_thread_id와 body가 필요해요' });

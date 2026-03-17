@@ -1,4 +1,3 @@
-import '../style.css';
 import { loadFilms, loadReviews } from './data.js';
 import { buildConstellation, startRender } from './scene.js';
 import { buildLegend, bindEvents, setUserFilmIndices, setReviewsMap, findMyStars, resetStars, bindReviewEvents } from './ui.js';

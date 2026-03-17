@@ -64,6 +64,7 @@
     backdrop-filter: blur(16px);
   }
   .film-card.visible { opacity: 1; transform: translateY(0); }
+  .film-card.pinned { pointer-events: auto; }
 
   .film-card::before {
     content: ''; position: absolute; top: 0; left: 0;

@@ -13,6 +13,7 @@ import {
 // ═══════════════════════════════════════════════
 
 let hoveredIdx = -1;
+let pinnedIdx = -1;
 let activeCluster = -1;
 let searchTerm = '';
 let isDragging = false;
@@ -77,9 +78,41 @@ function bindEvents(films) {
     setDragging(true);
   });
 
-  window.addEventListener('mouseup', () => {
+  window.addEventListener('mouseup', (e) => {
     isDragging = false;
     setDragging(false);
+
+    // 클릭(드래그 아님) → 별 위면 카드 고정, 아니면 고정 해제
+    if (!hasDragged) {
+      const card = document.getElementById('card');
+      // 카드 내부 클릭이면 무시 (버튼 등 클릭 가능하게)
+      if (card.contains(e.target)) return;
+
+      // 클릭 위치에 별이 있는지 raycaster로 확인
+      mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      let clickedOnStar = false;
+      if (filmNodePoints) {
+        raycaster.setFromCamera(mouseNDC, camera);
+        const intersects = raycaster.intersectObject(filmNodePoints);
+        if (intersects.length > 0 && intersects[0].index < films.length) {
+          clickedOnStar = true;
+          hoveredIdx = intersects[0].index;
+        }
+      }
+
+      if (clickedOnStar) {
+        // 별 클릭 → 카드 고정
+        pinnedIdx = hoveredIdx;
+        card.classList.add('pinned');
+        updateCard(e.clientX, e.clientY, films);
+      } else {
+        // 빈 공간 클릭 → 고정 해제
+        pinnedIdx = -1;
+        hoveredIdx = -1;
+        card.classList.remove('pinned', 'visible');
+      }
+    }
   });
 
   renderer.domElement.addEventListener('wheel', (e) => {
@@ -129,6 +162,9 @@ function bindEvents(films) {
         const intersects = raycaster.intersectObject(filmNodePoints);
         if (intersects.length > 0 && intersects[0].index < films.length) {
           hoveredIdx = intersects[0].index;
+          pinnedIdx = hoveredIdx;
+          const card = document.getElementById('card');
+          card.classList.add('pinned');
           const f = films[hoveredIdx];
           const color = COLORS[f.cluster % COLORS.length];
           for (let j = 0; j < 10; j++) {
@@ -139,7 +175,9 @@ function bindEvents(films) {
           updateCard(t.clientX, t.clientY, films);
         } else {
           hoveredIdx = -1;
-          document.getElementById('card').classList.remove('visible');
+          pinnedIdx = -1;
+          const card = document.getElementById('card');
+          card.classList.remove('pinned', 'visible');
         }
       }
     }
@@ -183,6 +221,16 @@ function onMouseMove(e, films) {
 
   if (intersects.length > 0) {
     const idx = intersects[0].index;
+    // 아이디 검색 중이면 그 사람 추천 영화만 반응
+    const isFiltered = userFilmIndices.length > 0 && !userFilmIndices.includes(idx);
+    if (isFiltered) {
+      if (hoveredIdx >= 0 && pinnedIdx < 0) {
+        hoveredIdx = -1;
+        document.getElementById('card').classList.remove('visible');
+      }
+      renderer.domElement.style.cursor = 'default';
+      return;
+    }
     if (idx !== hoveredIdx && idx < films.length) {
       hoveredIdx = idx;
       // 호버 시 스파클 분출
@@ -199,7 +247,7 @@ function onMouseMove(e, films) {
     }
     renderer.domElement.style.cursor = 'pointer';
   } else {
-    if (hoveredIdx >= 0) {
+    if (hoveredIdx >= 0 && pinnedIdx < 0) {
       hoveredIdx = -1;
       document.getElementById('card').classList.remove('visible');
     }
