@@ -4,6 +4,7 @@
  */
 import express from 'express';
 import pg from 'pg';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -125,7 +126,8 @@ app.get('/api/reviews/:film_title_en', async (req, res) => {
 app.post('/api/reviews', async (req, res) => {
   if (!pool) return res.status(503).json({ error: 'DB not configured' });
   const { film_title_en, content, password } = req.body;
-  if (password !== process.env.ADMIN_PASSWORD) {
+  const match = await bcrypt.compare(password || '', process.env.ADMIN_PASSWORD_HASH || '');
+  if (!match) {
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
   }
   if (!film_title_en || !content) {
@@ -152,7 +154,8 @@ app.post('/api/reviews', async (req, res) => {
 app.put('/api/reviews/:id', async (req, res) => {
   if (!pool) return res.status(503).json({ error: 'DB not configured' });
   const { content, password } = req.body;
-  if (password !== process.env.ADMIN_PASSWORD) {
+  const match = await bcrypt.compare(password || '', process.env.ADMIN_PASSWORD_HASH || '');
+  if (!match) {
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
   }
   try {

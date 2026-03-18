@@ -33,7 +33,7 @@ services:
       NODE_ENV: development
       PORT: 3000
       DATABASE_URL: postgresql://dev:dev@db:5432/trace
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-trace-admin-dev}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-$2b$12$placeholder}
     ports:
       - "3001:3000"   # 호스트 3001 → 컨테이너 3000 (Psychpaper이 3000 사용 중)
     volumes:
