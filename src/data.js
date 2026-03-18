@@ -112,19 +112,6 @@ function generateDemoData() {
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001';
 
-export async function loadReviews() {
-  try {
-    const resp = await fetch(`${API_BASE}/api/reviews`);
-    if (!resp.ok) return {};
-    const reviews = await resp.json();
-    const map = {};
-    reviews.forEach(r => { map[r.film_title_en] = r; });
-    return map;
-  } catch {
-    return {};
-  }
-}
-
 /**
  * 추천인별 프로필 집계
  * @param {Array} films - films_embedded.json 데이터
@@ -176,10 +163,42 @@ export function buildRecommenderProfiles(films) {
 }
 
 export async function loadFilms() {
+  // 1차: API에서 로드
   try {
-    const resp = await fetch('/films_embedded.json');
-    return await resp.json();
-  } catch {
-    return generateDemoData();
+    const resp = await fetch(`${API_BASE}/api/films`);
+    if (!resp.ok) throw new Error(`API ${resp.status}`);
+    const raw = await resp.json();
+    const films = raw.map(f => ({
+      ...f,
+      status: f.status || 'unwatched',
+      review: f.content ?? null,
+    }));
+    films.forEach(f => { delete f.content; });
+    console.log(`[Cinegraph] API mode — ${films.length} films loaded`);
+    return { films, mode: 'api' };
+  } catch (err) {
+    console.warn('[Cinegraph] API failed:', err.message);
+    // 2차: 정적 JSON 폴백
+    try {
+      const resp = await fetch('/films_embedded.json');
+      const raw = await resp.json();
+      const films = raw.map(f => ({
+        ...f,
+        status: 'unwatched',
+        review: null,
+      }));
+      console.log(`[Cinegraph] Fallback mode — API unavailable, using static data (${films.length} films)`);
+      return { films, mode: 'fallback' };
+    } catch (err2) {
+      console.warn('[Cinegraph] Static JSON failed:', err2.message);
+      // 3차: 데모 데이터
+      const films = generateDemoData().map(f => ({
+        ...f,
+        status: 'unwatched',
+        review: null,
+      }));
+      console.log(`[Cinegraph] Fallback mode — using demo data (${films.length} films)`);
+      return { films, mode: 'fallback' };
+    }
   }
 }
