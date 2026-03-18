@@ -24,13 +24,21 @@ const pool = process.env.DATABASE_URL
 
 app.use(express.json());
 
+// 개발 전용 엔드포인트 가드
+function devOnly(req, res, next) {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  next();
+}
+
 // 헬스체크
 app.get('/health', (req, res) => {
   res.json({ ok: true, service: 'trace-backend' });
 });
 
 // Spec.me: DB client confirms schema is present (tables exist)
-app.get('/api/schema-check', async (req, res) => {
+app.get('/api/schema-check', devOnly, async (req, res) => {
   if (!pool) {
     return res.status(503).json({ ok: false, error: 'DB not configured' });
   }
@@ -44,12 +52,16 @@ app.get('/api/schema-check', async (req, res) => {
     const ok = tables.length === 3;
     res.json({ ok, tables });
   } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
+    res.status(500).json({
+      ok: false,
+      error: '서버 오류가 발생했어요',
+      ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
+    });
   }
 });
 
 // Spec.me: insert one User row for validation; returns the row
-app.post('/api/dev/seed-one-user', async (req, res) => {
+app.post('/api/dev/seed-one-user', devOnly, async (req, res) => {
   if (!pool) {
     return res.status(503).json({ error: 'DB not configured' });
   }
@@ -61,7 +73,10 @@ app.post('/api/dev/seed-one-user', async (req, res) => {
     );
     res.status(201).json(rows[0]);
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({
+      error: '서버 오류가 발생했어요',
+      ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
+    });
   }
 });
 
@@ -76,7 +91,10 @@ app.get('/api/reviews', async (req, res) => {
     );
     res.json(rows);
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({
+      error: '서버 오류가 발생했어요',
+      ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
+    });
   }
 });
 
@@ -96,7 +114,10 @@ app.get('/api/reviews/:film_title_en', async (req, res) => {
     );
     res.json({ review: reviews[0], comments });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({
+      error: '서버 오류가 발생했어요',
+      ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
+    });
   }
 });
 
@@ -120,7 +141,10 @@ app.post('/api/reviews', async (req, res) => {
     if (e.code === '23505') {
       return res.status(409).json({ error: '이미 감상평이 있어요. 수정하려면 PUT을 사용하세요' });
     }
-    res.status(500).json({ error: e.message });
+    res.status(500).json({
+      error: '서버 오류가 발생했어요',
+      ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
+    });
   }
 });
 
@@ -139,7 +163,10 @@ app.put('/api/reviews/:id', async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ error: '감상평을 찾을 수 없어요' });
     res.json(rows[0]);
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({
+      error: '서버 오류가 발생했어요',
+      ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
+    });
   }
 });
 
@@ -157,7 +184,10 @@ app.post('/api/reviews/:id/comments', async (req, res) => {
     );
     res.status(201).json(rows[0]);
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({
+      error: '서버 오류가 발생했어요',
+      ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
+    });
   }
 });
 
