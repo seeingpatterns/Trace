@@ -837,7 +837,10 @@ async function submitComment(reviewId, films) {
   const body = document.getElementById('comment-textarea').value.trim();
   if (!body || !_activeThreadId) return;
   const password = sessionStorage.getItem('trace-admin-pw') || '';
-  if (!password) return;
+  if (!password) {
+    alert('먼저 감상평을 작성해서 비밀번호를 입력해주세요');
+    return;
+  }
   try {
     const resp = await fetch(`${API_BASE}/api/reviews/${reviewId}/comments`, {
       method: 'POST',
