@@ -1,11 +1,14 @@
-import { loadFilms, loadReviews, buildRecommenderProfiles } from './data.js';
+import { loadFilms, buildRecommenderProfiles } from './data.js';
 import { buildConstellation, startRender } from './scene.js';
-import { buildLegend, bindEvents, setUserFilmIndices, setReviewsMap, findMyStars, resetStars, bindReviewEvents } from './ui.js';
+import { buildLegend, bindEvents, setUserFilmIndices, setAppMode, findMyStars, resetStars, bindReviewEvents, initProgressUI } from './ui.js';
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001';
 
 async function init() {
-  const films = await loadFilms();
-  const reviewsMap = await loadReviews();
-  setReviewsMap(reviewsMap);
+  const { films, mode } = await loadFilms();
+
+  // ui.js에 모드 전달
+  setAppMode(mode);
 
   // URL 파라미터 보물찾기
   const urlParams = new URLSearchParams(window.location.search);
@@ -44,21 +47,34 @@ async function init() {
   document.querySelector('.header-right').innerHTML = `${films.length} Films<br>Neural Constellation`;
   document.getElementById('counter').textContent = `${films.length} films`;
 
-  // 작업 1-2: 추천인별 프로필 집계
+  // 추천인별 프로필 집계
   const recommenderProfiles = buildRecommenderProfiles(films);
   console.log('[Cinegraph] 추천인 프로필:', recommenderProfiles);
 
+  // 성좌도 즉시 렌더링 (최우선)
   buildConstellation(films, highlightUser, userFilmIndices);
   buildLegend(films);
   bindEvents(films);
   bindReviewEvents(films);
 
-  // find-panel 버튼 이벤트 바인딩 (index.html의 onclick은 전역 함수를 참조하므로 여기서 바인딩)
   document.getElementById('find-btn').addEventListener('click', () => findMyStars(films));
   document.getElementById('reset-btn').addEventListener('click', () => resetStars(films));
 
   document.getElementById('loading').classList.add('hidden');
   startRender(films);
+
+  // 프로그레스는 렌더링 이후 비동기 로드 (API 모드만)
+  if (mode === 'api') {
+    try {
+      const resp = await fetch(`${API_BASE}/api/progress`);
+      if (resp.ok) {
+        const progress = await resp.json();
+        initProgressUI(progress, films);
+      }
+    } catch {
+      console.log('[Cinegraph] Progress fetch failed — skipping progress UI');
+    }
+  }
 }
 
 init();
