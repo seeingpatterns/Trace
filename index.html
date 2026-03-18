@@ -26,6 +26,12 @@
 
 <div class="treasure-banner" id="treasure-banner"></div>
 <div class="legend" id="legend"></div>
+<div class="progress-container" id="progress-container" style="display:none">
+  <div class="progress-count" id="progress-count">0 / 0</div>
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+  </div>
+</div>
 <div class="counter" id="counter">56 films</div>
 <div class="hint">drag to rotate · scroll to zoom</div>
 
@@ -63,6 +69,8 @@
   <div class="card-meta" id="card-meta"></div>
   <div class="card-desc" id="card-desc"></div>
   <div class="card-note" id="card-note"></div>
+  <div class="card-status-toggle" id="card-status-toggle" style="display:none">○</div>
+  <div class="card-save-error" id="card-save-error" style="display:none"></div>
   <div class="card-review" id="card-review"></div>
   <button class="card-review-btn" id="card-review-btn">감상평 쓰기</button>
   <div class="card-comments" id="card-comments"></div>

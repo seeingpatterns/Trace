@@ -6,6 +6,7 @@ import {
   filmNodePoints, filmPositions3D, sparkles,
   Sparkle, pixelRatio,
   handleResize, setDragging, setHighlightedFilms,
+  updateFilmStatus, triggerMilestoneBoom, celebrateCompletion,
 } from './scene.js';
 
 // ═══════════════════════════════════════════════
@@ -23,13 +24,16 @@ let dragStart = { x: 0, y: 0 };
 let userFilmIndices = [];
 export function setUserFilmIndices(indices) { userFilmIndices = indices; }
 
-let _reviewsMap = {};
-export function setReviewsMap(map) { _reviewsMap = map; }
-
 let _activeThreadId = '';
 let _currentFilmTitleEn = '';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001';
+
+let _appMode = 'fallback';
+let _films = [];
+let _isSaving = false;
+
+export function setAppMode(mode) { _appMode = mode; }
 
 // ═══════════════════════════════════════════════
 // Raycaster
@@ -288,24 +292,31 @@ function updateCard(mx, my, films) {
   // 감상평 표시
   const reviewEl = document.getElementById('card-review');
   const reviewBtn = document.getElementById('card-review-btn');
-  const review = _reviewsMap[f.title_en];
-  if (review) {
-    reviewEl.textContent = review.content;
+  if (f.review) {
+    reviewEl.textContent = f.review;
     reviewEl.style.display = 'block';
     reviewBtn.style.display = 'none';
   } else {
     reviewEl.style.display = 'none';
-    reviewBtn.style.display = 'inline-block';
+    reviewBtn.style.display = _appMode === 'api' ? 'inline-block' : 'none';
   }
 
-  // 댓글 표시
+  // 상태 토글 아이콘 (API 모드만)
+  const statusToggle = document.getElementById('card-status-toggle');
+  if (_appMode === 'api') {
+    statusToggle.style.display = 'block';
+    renderStatusIcon(statusToggle, f.status);
+  } else {
+    statusToggle.style.display = 'none';
+  }
+
+  // 댓글 표시 (API 모드만)
   const commentsEl = document.getElementById('card-comments');
   const commentForm = document.getElementById('card-comment-form');
   commentsEl.innerHTML = '';
   commentForm.style.display = 'none';
 
-  if (review) {
-    // 댓글 비동기 로드
+  if (_appMode === 'api' && f.review) {
     fetch(`${API_BASE}/api/reviews/${encodeURIComponent(f.title_en)}`)
       .then(r => r.json())
       .then(data => {
@@ -324,7 +335,6 @@ function updateCard(mx, my, films) {
       })
       .catch(() => {});
 
-    // 추천인 본인 영화면 댓글 폼 표시
     if (_activeThreadId) {
       const recommenders = f.recommender.toLowerCase().split(/\s*\/\s*/);
       if (recommenders.some(r => r.trim() === _activeThreadId)) {
@@ -821,8 +831,10 @@ async function submitReview() {
       return;
     }
     sessionStorage.setItem('trace-admin-pw', password);
-    const review = await resp.json();
-    _reviewsMap[_currentFilmTitleEn] = review;
+    // film.review 직접 업데이트
+    if (pinnedIdx >= 0 && _films[pinnedIdx]) {
+      _films[pinnedIdx].review = content;
+    }
     closeReviewModal();
   } catch {
     errorEl.textContent = '서버 연결 실패'; errorEl.style.display = 'block';
@@ -833,7 +845,7 @@ async function submitReview() {
 // 댓글 제출
 // ═══════════════════════════════════════════════
 
-async function submitComment(reviewId, films) {
+async function submitComment(filmTitleEn, films) {
   const body = document.getElementById('comment-textarea').value.trim();
   if (!body || !_activeThreadId) return;
   const password = sessionStorage.getItem('trace-admin-pw') || '';
@@ -842,14 +854,17 @@ async function submitComment(reviewId, films) {
     return;
   }
   try {
-    const resp = await fetch(`${API_BASE}/api/reviews/${reviewId}/comments`, {
+    const reviewResp = await fetch(`${API_BASE}/api/reviews/${encodeURIComponent(filmTitleEn)}`);
+    if (!reviewResp.ok) return;
+    const reviewData = await reviewResp.json();
+
+    const resp = await fetch(`${API_BASE}/api/reviews/${reviewData.id}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ author_thread_id: _activeThreadId, body, password }),
     });
     if (resp.ok) {
       document.getElementById('comment-textarea').value = '';
-      // 카드 갱신
       if (hoveredIdx >= 0) updateCard(0, 0, films);
     }
   } catch { /* 무시 */ }
@@ -860,8 +875,10 @@ async function submitComment(reviewId, films) {
 // ═══════════════════════════════════════════════
 
 function bindReviewEvents(films) {
+  _films = films;
   document.getElementById('card-review-btn').addEventListener('click', (e) => {
     e.stopPropagation();
+    if (_appMode !== 'api') return;
     const f = films[hoveredIdx];
     if (f) openReviewModal(f.title_en, f.title);
   });
@@ -873,9 +890,136 @@ function bindReviewEvents(films) {
   document.getElementById('comment-submit-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     const f = films[hoveredIdx];
-    const review = f ? _reviewsMap[f.title_en] : null;
-    if (review) submitComment(review.id, films);
+    if (f && f.review) submitComment(f.title_en, films);
   });
+
+  // 상태 토글 바인딩
+  bindStatusToggle(films);
+}
+
+// ═══════════════════════════════════════════════
+// 상태 탭 순환
+// ═══════════════════════════════════════════════
+
+const STATUS_ICONS = {
+  unwatched: '○',
+  watching: '◐',
+  watched: '●',
+};
+
+const STATUS_CYCLE = { unwatched: 'watching', watching: 'watched', watched: 'unwatched' };
+
+function renderStatusIcon(el, status) {
+  el.textContent = STATUS_ICONS[status] || '○';
+  el.dataset.status = status;
+  el.title = status;
+}
+
+function bindStatusToggle(films) {
+  _films = films;
+  const toggle = document.getElementById('card-status-toggle');
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (_isSaving || _appMode !== 'api' || pinnedIdx < 0) return;
+
+    const film = films[pinnedIdx];
+    const previousStatus = film.status;
+    const newStatus = STATUS_CYCLE[previousStatus];
+
+    // 낙관적 업데이트
+    _isSaving = true;
+    film.status = newStatus;
+    renderStatusIcon(toggle, newStatus);
+
+    // 아이콘 bounce
+    gsap.fromTo(toggle, { scale: 1 }, { scale: 1.3, duration: 0.1, yoyo: true, repeat: 1, ease: 'power2.out' });
+
+    // scene 업데이트
+    updateFilmStatus(pinnedIdx, newStatus, films);
+
+    // 프로그레스 로컬 재계산
+    const progress = recalcProgress(films);
+    updateProgressUI(progress);
+    checkMilestone(progress);
+
+    // 비동기 PUT
+    fetch(`${API_BASE}/api/reviews/${encodeURIComponent(film.title_en)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    })
+      .then(resp => {
+        if (!resp.ok) throw new Error(`PUT ${resp.status}`);
+        _isSaving = false;
+      })
+      .catch(() => {
+        // 롤백
+        film.status = previousStatus;
+        renderStatusIcon(toggle, previousStatus);
+        updateFilmStatus(pinnedIdx, previousStatus, films);
+        const rollbackProgress = recalcProgress(films);
+        updateProgressUI(rollbackProgress);
+
+        // 인라인 에러 피드백
+        const errorEl = document.getElementById('card-save-error');
+        errorEl.textContent = '저장 실패';
+        errorEl.style.display = 'block';
+        setTimeout(() => { errorEl.style.display = 'none'; }, 2000);
+
+        _isSaving = false;
+      });
+  });
+}
+
+// ═══════════════════════════════════════════════
+// 프로그레스 UI
+// ═══════════════════════════════════════════════
+
+let _prevMilestone = 0;
+
+function recalcProgress(films) {
+  return {
+    total: films.length,
+    watched: films.filter(f => f.status === 'watched').length,
+    watching: films.filter(f => f.status === 'watching').length,
+    unwatched: films.filter(f => f.status === 'unwatched').length,
+  };
+}
+
+export function initProgressUI(progress, films) {
+  _films = films;
+  _prevMilestone = Math.floor((progress.watched / progress.total) * 4);
+  const container = document.getElementById('progress-container');
+  container.style.display = 'block';
+  updateProgressUI(progress);
+}
+
+function updateProgressUI(progress) {
+  const countEl = document.getElementById('progress-count');
+  const barEl = document.getElementById('progress-bar-fill');
+
+  if (!countEl || !barEl) return;
+
+  const pct = progress.total > 0 ? (progress.watched / progress.total) * 100 : 0;
+  countEl.textContent = `${progress.watched} / ${progress.total}`;
+  barEl.style.width = `${pct}%`;
+}
+
+function checkMilestone(progress) {
+  const pct = progress.watched / progress.total;
+  const currentMilestone = Math.floor(pct * 4);
+
+  if (currentMilestone > _prevMilestone) {
+    if (currentMilestone === 4) {
+      celebrateCompletion();
+    } else {
+      triggerMilestoneBoom();
+    }
+    _prevMilestone = currentMilestone;
+  }
+  if (currentMilestone < _prevMilestone) {
+    _prevMilestone = currentMilestone;
+  }
 }
 
 // ═══════════════════════════════════════════════

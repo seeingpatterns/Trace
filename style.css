@@ -457,6 +457,49 @@
     letter-spacing: 0.5px;
   }
 
+  /* ── 프로그레스 UI ── */
+  .progress-container {
+    position: fixed; bottom: 52px; left: 36px; z-index: 100;
+    pointer-events: none;
+  }
+
+  .progress-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; color: #7a7670;
+    letter-spacing: 1px; margin-bottom: 6px;
+  }
+
+  .progress-bar-track {
+    width: 200px; height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px; overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #1EE3CF, #6B48FF);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  /* ── 상태 토글 아이콘 ── */
+  .card-status-toggle {
+    position: absolute; top: 14px; left: 24px;
+    font-size: 18px; cursor: pointer;
+    color: #7a7670; user-select: none;
+    pointer-events: auto;
+    transition: color 0.2s;
+  }
+  .card-status-toggle:hover { color: #1EE3CF; }
+  .card-status-toggle[data-status="watched"] { color: #1EE3CF; }
+  .card-status-toggle[data-status="watching"] { color: #C084FC; }
+
+  /* ── 저장 에러 ── */
+  .card-save-error {
+    font-size: 10px; color: #FF6B6B;
+    margin-top: 4px; display: none;
+  }
+
   /* ── 모바일 반응형 ── */
   @media (max-width: 768px) {
     .header { padding: 16px 16px; }
@@ -472,6 +515,9 @@
     .find-panel { bottom: 72px; }
     .find-panel input { width: 150px; font-size: 12px; padding: 7px 12px; }
     .find-panel button { font-size: 11px; padding: 7px 12px; }
+
+    .progress-container { left: 16px; bottom: 44px; }
+    .progress-bar-track { width: 150px; }
 
     /* 클러스터 범례 */
     .legend { left: 16px; bottom: 16px; gap: 8px; }
