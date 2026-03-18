@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import pg from 'pg';
 import bcrypt from 'bcrypt';
 import rateLimit from 'express-rate-limit';
+import logger from './logger.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,6 +21,10 @@ const generalLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: '너무 많은 요청이에요. 잠시 후 다시 시도해주세요' },
+  handler: (req, res, next, options) => {
+    logger.warn({ ip: req.ip, path: req.path }, 'rate limit exceeded (general)');
+    res.status(options.statusCode).json(options.message);
+  },
 });
 
 const authLimiter = rateLimit({
@@ -28,6 +33,10 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: '너무 많은 요청이에요. 잠시 후 다시 시도해주세요' },
+  handler: (req, res, next, options) => {
+    logger.warn({ ip: req.ip, path: req.path }, 'rate limit exceeded (auth)');
+    res.status(options.statusCode).json(options.message);
+  },
 });
 
 app.use(generalLimiter);
@@ -77,6 +86,7 @@ app.get('/api/schema-check', devOnly, async (req, res) => {
     const ok = tables.length === 3;
     res.json({ ok, tables });
   } catch (e) {
+    logger.error({ ip: req.ip, path: req.path, err: e.message }, 'server error');
     res.status(500).json({
       ok: false,
       error: '서버 오류가 발생했어요',
@@ -98,6 +108,7 @@ app.post('/api/dev/seed-one-user', devOnly, async (req, res) => {
     );
     res.status(201).json(rows[0]);
   } catch (e) {
+    logger.error({ ip: req.ip, path: req.path, err: e.message }, 'server error');
     res.status(500).json({
       error: '서버 오류가 발생했어요',
       ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
@@ -116,6 +127,7 @@ app.get('/api/reviews', async (req, res) => {
     );
     res.json(rows);
   } catch (e) {
+    logger.error({ ip: req.ip, path: req.path, err: e.message }, 'server error');
     res.status(500).json({
       error: '서버 오류가 발생했어요',
       ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
@@ -139,6 +151,7 @@ app.get('/api/reviews/:film_title_en', async (req, res) => {
     );
     res.json({ review: reviews[0], comments });
   } catch (e) {
+    logger.error({ ip: req.ip, path: req.path, err: e.message }, 'server error');
     res.status(500).json({
       error: '서버 오류가 발생했어요',
       ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
@@ -152,12 +165,15 @@ app.post('/api/reviews', authLimiter, async (req, res) => {
   const { film_title_en, content, password } = req.body;
   const hash = process.env.ADMIN_PASSWORD_HASH;
   if (!hash || !password) {
+    logger.warn({ ip: req.ip, path: req.path }, 'auth failed: missing credentials');
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
   }
   const match = await bcrypt.compare(password, hash);
   if (!match) {
+    logger.warn({ ip: req.ip, path: req.path }, 'auth failed: wrong password');
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
   }
+  logger.info({ ip: req.ip, path: req.path }, 'auth success: review create');
   if (!film_title_en || !content) {
     return res.status(400).json({ error: 'film_title_en과 content가 필요해요' });
   }
@@ -171,6 +187,7 @@ app.post('/api/reviews', authLimiter, async (req, res) => {
     if (e.code === '23505') {
       return res.status(409).json({ error: '이미 감상평이 있어요. 수정하려면 PUT을 사용하세요' });
     }
+    logger.error({ ip: req.ip, path: req.path, err: e.message }, 'server error');
     res.status(500).json({
       error: '서버 오류가 발생했어요',
       ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
@@ -184,12 +201,15 @@ app.put('/api/reviews/:id', authLimiter, async (req, res) => {
   const { content, password } = req.body;
   const hash = process.env.ADMIN_PASSWORD_HASH;
   if (!hash || !password) {
+    logger.warn({ ip: req.ip, path: req.path }, 'auth failed: missing credentials');
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
   }
   const match = await bcrypt.compare(password, hash);
   if (!match) {
+    logger.warn({ ip: req.ip, path: req.path }, 'auth failed: wrong password');
     return res.status(401).json({ error: '비밀번호가 틀렸어요' });
   }
+  logger.info({ ip: req.ip, path: req.path }, 'auth success: review update');
   try {
     const { rows } = await pool.query(
       'UPDATE reviews SET content = $1, updated_at = now() WHERE id = $2 RETURNING *',
@@ -198,6 +218,7 @@ app.put('/api/reviews/:id', authLimiter, async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ error: '감상평을 찾을 수 없어요' });
     res.json(rows[0]);
   } catch (e) {
+    logger.error({ ip: req.ip, path: req.path, err: e.message }, 'server error');
     res.status(500).json({
       error: '서버 오류가 발생했어요',
       ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
@@ -219,6 +240,7 @@ app.post('/api/reviews/:id/comments', authLimiter, async (req, res) => {
     );
     res.status(201).json(rows[0]);
   } catch (e) {
+    logger.error({ ip: req.ip, path: req.path, err: e.message }, 'server error');
     res.status(500).json({
       error: '서버 오류가 발생했어요',
       ...(process.env.NODE_ENV !== 'production' && { detail: e.message }),
@@ -227,5 +249,5 @@ app.post('/api/reviews/:id/comments', authLimiter, async (req, res) => {
 });
 
 app.listen(port, '0.0.0.0', () => {
-  console.log(`Backend listening on http://0.0.0.0:${port}`);
+  logger.info({ port }, 'backend listening');
 });
