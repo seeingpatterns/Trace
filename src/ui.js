@@ -273,7 +273,12 @@ function updateCard(mx, my, films) {
   document.getElementById('card-year').textContent = f.year;
   document.getElementById('card-title').textContent = f.title;
   document.getElementById('card-title-en').textContent = f.title_en;
-  document.getElementById('card-meta').innerHTML = `<strong>${f.director}</strong> · 추천 @${f.recommender}`;
+  const metaEl = document.getElementById('card-meta');
+  metaEl.textContent = '';
+  const strong = document.createElement('strong');
+  strong.textContent = f.director;
+  metaEl.appendChild(strong);
+  metaEl.appendChild(document.createTextNode(` · 추천 @${f.recommender}`));
   document.getElementById('card-desc').textContent = f.description;
 
   const noteEl = document.getElementById('card-note');
@@ -308,7 +313,11 @@ function updateCard(mx, my, films) {
           data.comments.forEach(c => {
             const div = document.createElement('div');
             div.className = 'comment-item';
-            div.innerHTML = `<span class="comment-author">@${c.author_thread_id}</span> ${c.body}`;
+            const author = document.createElement('span');
+            author.className = 'comment-author';
+            author.textContent = `@${c.author_thread_id}`;
+            div.appendChild(author);
+            div.appendChild(document.createTextNode(` ${c.body}`));
             commentsEl.appendChild(div);
           });
         }
@@ -362,7 +371,12 @@ function findMyStars(films) {
   if (userFilmIndices.length === 0) {
     const banner = document.getElementById('treasure-banner');
     banner.style.display = 'block';
-    banner.innerHTML = `<span class="user-name">@${input}</span> 님의 추천 영화를 찾지 못했어요`;
+    banner.textContent = '';
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'user-name';
+    nameSpan.textContent = `@${input}`;
+    banner.appendChild(nameSpan);
+    banner.appendChild(document.createTextNode(' 님의 추천 영화를 찾지 못했어요'));
     setTimeout(() => { banner.style.display = 'none'; }, 3000);
     return;
   }
@@ -371,7 +385,23 @@ function findMyStars(films) {
   const banner = document.getElementById('treasure-banner');
   banner.style.display = 'block';
   const titles = userFilmIndices.map(i => films[i].title).join(', ');
-  banner.innerHTML = `<span class="user-name">@${input}</span> 님이 추천한 영화 <span class="found-count">${userFilmIndices.length}</span>편이 빛나고 있어요!<br><small style="opacity:0.7">${titles}</small>`;
+  banner.textContent = '';
+  const nameSpan2 = document.createElement('span');
+  nameSpan2.className = 'user-name';
+  nameSpan2.textContent = `@${input}`;
+  banner.appendChild(nameSpan2);
+  banner.appendChild(document.createTextNode(' 님이 추천한 영화 '));
+  const countSpan = document.createElement('span');
+  countSpan.className = 'found-count';
+  countSpan.textContent = userFilmIndices.length;
+  banner.appendChild(countSpan);
+  banner.appendChild(document.createTextNode('편이 빛나고 있어요!'));
+  const br = document.createElement('br');
+  banner.appendChild(br);
+  const small = document.createElement('small');
+  small.style.opacity = '0.7';
+  small.textContent = titles;
+  banner.appendChild(small);
 
   // 노드 비주얼 업데이트 + 펄스 효과 활성화
   updateNodeVisuals(films);
