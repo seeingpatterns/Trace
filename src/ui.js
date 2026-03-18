@@ -793,7 +793,7 @@ function openReviewModal(filmTitleEn, filmTitle) {
   _currentFilmTitleEn = filmTitleEn;
   document.getElementById('review-modal-title').textContent = filmTitle;
   document.getElementById('review-textarea').value = '';
-  document.getElementById('review-password').value = '';
+  document.getElementById('review-password').value = sessionStorage.getItem('trace-admin-pw') || '';
   document.getElementById('review-modal-error').style.display = 'none';
   document.getElementById('review-modal').classList.add('open');
 }
@@ -820,6 +820,7 @@ async function submitReview() {
       errorEl.textContent = err.error; errorEl.style.display = 'block';
       return;
     }
+    sessionStorage.setItem('trace-admin-pw', password);
     const review = await resp.json();
     _reviewsMap[_currentFilmTitleEn] = review;
     closeReviewModal();
@@ -835,11 +836,13 @@ async function submitReview() {
 async function submitComment(reviewId, films) {
   const body = document.getElementById('comment-textarea').value.trim();
   if (!body || !_activeThreadId) return;
+  const password = sessionStorage.getItem('trace-admin-pw') || '';
+  if (!password) return;
   try {
     const resp = await fetch(`${API_BASE}/api/reviews/${reviewId}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ author_thread_id: _activeThreadId, body }),
+      body: JSON.stringify({ author_thread_id: _activeThreadId, body, password }),
     });
     if (resp.ok) {
       document.getElementById('comment-textarea').value = '';
