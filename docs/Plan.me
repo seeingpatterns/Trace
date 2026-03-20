@@ -1,24 +1,32 @@
 # Plan.me
 
-- **Goal:** Minimal Trace backend: DB with User, Review, Comment; success = insert one User row.
-- **Phase 1:** DB schema + Docker init; backend health + DB client check; no auth yet.
-- **Phase 2:** User profile (slug, display_name, bio, is_public), "write first then see others," recommender links.
-- **Out of scope for now:** Auth, production deploy, full API.
-- **Done when:** One row in `users` table from backend or script; Docker DB starts with schema applied.
+- **Goal:** Cinegraph — 영화 임베딩 성좌도 + 감상평/댓글/진행상태 관리
+- **Phase 1:** DB schema + Docker init; backend health + DB client check.
+- **Phase 2:** 감상평/댓글 CRUD, 보안 강화, 영화 진행 상태 추적, 취향 DNA 카드.
+- **Phase 3:** User 프로필 시스템, "먼저 쓰고 그 다음에 본다" 흐름, 추천인 링크.
+- **Out of scope for now:** 프로덕션 배포, OAuth 로그인.
 
 ---
 
 ## Progress (작업 끝나면 `[ ]` → `[x]`로 바꾸기)
 
-### Phase 1
+### Phase 1 ✅ 완료
 - [x] DB 스키마 (users, reviews, comments) + Docker init
 - [x] Backend `/health`, `/api/schema-check`, `/api/dev/seed-one-user`
 - [x] DBeaver/클라이언트에서 DB 연결 확인
 - [x] User 1행 insert 검증
-- [ ] reviews + comments 테이블 추가 (감상평·답글용)
-- [ ] 감상평 API (쓰기/읽기)
 
-### Phase 2
+### Phase 2 ✅ 완료
+- [x] reviews + comments 테이블 추가 (감상평·답글용)
+- [x] 감상평 API (CRUD 5개 엔드포인트)
+- [x] 프론트 감상평 표시 + 작성 모달
+- [x] 추천인 댓글 기능
+- [x] 보안 강화 (bcrypt, helmet, rate limiting, XSS 방지, pino 로깅)
+- [x] Phase 2-1: 영화 진행 상태 API (status 컬럼 + 토글 UI + 진행 바)
+- [x] Phase 1 작업 (클러스터 감성이름, 추천인 프로필, 취향 DNA 카드 + 이미지 저장)
+- [x] API 기반 영화 로딩 + JSON 폴백
+
+### Phase 3 🔲 다음 작업
 - [ ] User 프로필 (slug, display_name, bio, is_public)
 - [ ] "먼저 쓰고 그 다음에 본다" 흐름
 - [ ] 추천인 링크 (쓰레드 id → 프로필)
