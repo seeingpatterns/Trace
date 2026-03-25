@@ -448,6 +448,7 @@ function resetStars(films) {
   document.getElementById('find-input').value = '';
   document.getElementById('find-input').style.borderColor = '';
   document.getElementById('dna-card').classList.remove('visible');
+  hideRecommenderDetail();
   updateNodeVisuals(films);
 }
 
@@ -456,6 +457,7 @@ function resetStars(films) {
 // ═══════════════════════════════════════════════
 
 function showDnaCard(recommenderId, films) {
+  hideRecommenderDetail();
   const profiles = buildRecommenderProfiles(films);
   const profile = profiles[recommenderId];
   if (!profile) return;
