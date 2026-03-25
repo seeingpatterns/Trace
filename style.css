@@ -379,6 +379,18 @@
   }
   .dna-save:hover { background: rgba(30,227,207,0.2); }
 
+  .dna-detail-btn {
+    position: absolute; top: 10px; right: 90px;
+    background: rgba(107,72,255,0.1);
+    border: 1px solid rgba(107,72,255,0.2);
+    border-radius: 3px;
+    color: #6B48FF; font-size: 10px;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    padding: 3px 10px; cursor: pointer;
+    letter-spacing: 0.5px; transition: all 0.2s;
+  }
+  .dna-detail-btn:hover { background: rgba(107,72,255,0.2); }
+
   .dna-header { margin-bottom: 20px; }
 
   .dna-id {

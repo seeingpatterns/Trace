@@ -537,10 +537,84 @@ function showDnaCard(recommenderId, films) {
   // 닫기 버튼
   document.getElementById('dna-close').onclick = () => card.classList.remove('visible');
 
+  // 상세 보기 버튼 → Detail Panel 열기
+  document.getElementById('dna-detail-btn').onclick = () => {
+    showRecommenderDetail(recommenderId, films);
+  };
+
   // 카드 저장 버튼
   document.getElementById('dna-save').onclick = () => {
     renderDnaCardImage(recommenderId, profile, twins);
   };
+}
+
+// ═══════════════════════════════════════════════
+// Recommender Detail Panel
+// ═══════════════════════════════════════════════
+
+const STATUS_ICON = { watched: '★', watching: '◐', unwatched: '○' };
+const STATUS_LABEL = { watched: 'watched', watching: 'watching', unwatched: 'unwatched' };
+
+function showRecommenderDetail(recommenderId, films) {
+  // DNA 카드가 열려있으면 닫기 (동시에 열리지 않음)
+  document.getElementById('dna-card').classList.remove('visible');
+
+  const panel = document.getElementById('recommender-detail');
+  const idLower = recommenderId.toLowerCase();
+
+  // 해당 추천자의 영화 필터링
+  const recFilms = films
+    .filter(f => {
+      const handles = f.recommender.toLowerCase().split(/\s*\/\s*/);
+      return handles.some(h => h.trim() === idLower);
+    });
+
+  // 헤더
+  document.getElementById('rd-id').textContent = `@${recommenderId}`;
+  document.getElementById('rd-subtitle').textContent =
+    `${recFilms.length}편의 영화를 추천해주었어요`;
+
+  // 영화 리스트
+  const listEl = document.getElementById('rd-film-list');
+  listEl.innerHTML = '';
+
+  recFilms.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'rd-film-card';
+
+    const status = f.status || 'unwatched';
+    const icon = STATUS_ICON[status];
+    const label = STATUS_LABEL[status];
+    const review = f.review ?? f.content ?? null;
+
+    let html = '';
+    html += `<div class="rd-film-title">${f.title} (${f.year})</div>`;
+    html += `<div class="rd-film-director">${f.director}</div>`;
+    html += `<div class="rd-film-status ${status}">${icon} ${label}</div>`;
+
+    if (f.note) {
+      html += `<div class="rd-film-note">추천: "${f.note}"</div>`;
+    }
+
+    if (review) {
+      html += `<div class="rd-film-reflection">${review}</div>`;
+    } else {
+      html += `<div class="rd-film-no-reflection">아직 감상을 쓰지 않았어요</div>`;
+    }
+
+    card.innerHTML = html;
+    listEl.appendChild(card);
+  });
+
+  // 슬라이드인
+  panel.classList.add('visible');
+
+  // 닫기 버튼
+  document.getElementById('rd-close').onclick = () => hideRecommenderDetail();
+}
+
+function hideRecommenderDetail() {
+  document.getElementById('recommender-detail').classList.remove('visible');
 }
 
 // ═══════════════════════════════════════════════
@@ -1026,4 +1100,4 @@ function checkMilestone(progress) {
 // Exports
 // ═══════════════════════════════════════════════
 
-export { buildLegend, bindEvents, findMyStars, resetStars, bindReviewEvents };
+export { buildLegend, bindEvents, findMyStars, resetStars, bindReviewEvents, showRecommenderDetail, hideRecommenderDetail };
