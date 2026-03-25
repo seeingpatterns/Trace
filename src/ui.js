@@ -21,8 +21,8 @@ let isDragging = false;
 let hasDragged = false;
 let dragStart = { x: 0, y: 0 };
 
-let userFilmIndices = [];
-export function setUserFilmIndices(indices) { userFilmIndices = indices; }
+let recommenderFilmIndices = [];
+export function setUserFilmIndices(indices) { recommenderFilmIndices = indices; }
 
 let _activeThreadId = '';
 let _currentFilmTitleEn = '';
@@ -229,7 +229,7 @@ function onMouseMove(e, films) {
   if (intersects.length > 0) {
     const idx = intersects[0].index;
     // 아이디 검색 중이면 그 사람 추천 영화만 반응
-    const isFiltered = userFilmIndices.length > 0 && !userFilmIndices.includes(idx);
+    const isFiltered = recommenderFilmIndices.length > 0 && !recommenderFilmIndices.includes(idx);
     if (isFiltered) {
       if (hoveredIdx >= 0) {
         hoveredIdx = -1;
@@ -369,21 +369,21 @@ function findMyStars(films) {
 
   _activeThreadId = input;
 
-  // 유저 영화 찾기
-  userFilmIndices = [];
+  // 추천자 영화 찾기
+  recommenderFilmIndices = [];
   films.forEach((f, i) => {
     const recommenders = f.recommender.toLowerCase().split(/\s*\/\s*/);
     if (recommenders.some(r => r.trim() === input)) {
-      userFilmIndices.push(i);
+      recommenderFilmIndices.push(i);
     }
   });
 
-  if (userFilmIndices.length === 0) {
+  if (recommenderFilmIndices.length === 0) {
     const banner = document.getElementById('treasure-banner');
     banner.style.display = 'block';
     banner.textContent = '';
     const nameSpan = document.createElement('span');
-    nameSpan.className = 'user-name';
+    nameSpan.className = 'recommender-name';
     nameSpan.textContent = `@${input}`;
     banner.appendChild(nameSpan);
     banner.appendChild(document.createTextNode(' 님의 추천 영화를 찾지 못했어요'));
@@ -394,16 +394,16 @@ function findMyStars(films) {
   // 배너 표시
   const banner = document.getElementById('treasure-banner');
   banner.style.display = 'block';
-  const titles = userFilmIndices.map(i => films[i].title).join(', ');
+  const titles = recommenderFilmIndices.map(i => films[i].title).join(', ');
   banner.textContent = '';
   const nameSpan2 = document.createElement('span');
-  nameSpan2.className = 'user-name';
+  nameSpan2.className = 'recommender-name';
   nameSpan2.textContent = `@${input}`;
   banner.appendChild(nameSpan2);
   banner.appendChild(document.createTextNode(' 님이 추천한 영화 '));
   const countSpan = document.createElement('span');
   countSpan.className = 'found-count';
-  countSpan.textContent = userFilmIndices.length;
+  countSpan.textContent = recommenderFilmIndices.length;
   banner.appendChild(countSpan);
   banner.appendChild(document.createTextNode('편이 빛나고 있어요!'));
   const br = document.createElement('br');
@@ -415,10 +415,10 @@ function findMyStars(films) {
 
   // 노드 비주얼 업데이트 + 펄스 효과 활성화
   updateNodeVisuals(films);
-  setHighlightedFilms(userFilmIndices);
+  setHighlightedFilms(recommenderFilmIndices);
 
-  // 유저 영화에 스파클 폭발
-  userFilmIndices.forEach(idx => {
+  // 추천자 영화에 스파클 폭발
+  recommenderFilmIndices.forEach(idx => {
     const color = COLORS[films[idx].cluster % COLORS.length];
     for (let j = 0; j < 20; j++) {
       const spark = new Sparkle();
@@ -440,7 +440,7 @@ function findMyStars(films) {
 // ═══════════════════════════════════════════════
 
 function resetStars(films) {
-  userFilmIndices = [];
+  recommenderFilmIndices = [];
   _activeThreadId = '';
   setHighlightedFilms([]);
   document.getElementById('treasure-banner').style.display = 'none';
@@ -455,15 +455,15 @@ function resetStars(films) {
 // 취향 DNA 카드
 // ═══════════════════════════════════════════════
 
-function showDnaCard(userId, films) {
+function showDnaCard(recommenderId, films) {
   const profiles = buildRecommenderProfiles(films);
-  const profile = profiles[userId];
+  const profile = profiles[recommenderId];
   if (!profile) return;
 
   const card = document.getElementById('dna-card');
 
   // 아이디 + 영화 수
-  document.getElementById('dna-id').textContent = `@${userId}`;
+  document.getElementById('dna-id').textContent = `@${recommenderId}`;
   document.getElementById('dna-count').textContent = `${profile.count}편 추천`;
 
   // 클러스터 분포 바 차트
@@ -511,7 +511,7 @@ function showDnaCard(userId, films) {
   // 취향 쌍둥이 찾기
   const twinsEl = document.getElementById('dna-twins');
   twinsEl.innerHTML = '';
-  const twins = findTasteTwins(userId, profiles);
+  const twins = findTasteTwins(recommenderId, profiles);
 
   if (twins.length === 0) {
     twinsEl.innerHTML = '<span style="font-size:11px;color:#555">아직 데이터가 부족해요</span>';
@@ -539,7 +539,7 @@ function showDnaCard(userId, films) {
 
   // 카드 저장 버튼
   document.getElementById('dna-save').onclick = () => {
-    renderDnaCardImage(userId, profile, twins);
+    renderDnaCardImage(recommenderId, profile, twins);
   };
 }
 
@@ -547,7 +547,7 @@ function showDnaCard(userId, films) {
 // 취향 DNA 카드 → PNG 이미지 렌더링
 // ═══════════════════════════════════════════════
 
-function renderDnaCardImage(userId, profile, twins) {
+function renderDnaCardImage(recommenderId, profile, twins) {
   const W = 1080, H = 1080;
   const canvas = document.createElement('canvas');
   canvas.width = W;
@@ -587,7 +587,7 @@ function renderDnaCardImage(userId, profile, twins) {
   // 추천인 아이디
   ctx.fillStyle = '#1EE3CF';
   ctx.font = '600 48px "Cormorant Garamond", Georgia, serif';
-  ctx.fillText(`@${userId}`, 60, 220);
+  ctx.fillText(`@${recommenderId}`, 60, 220);
 
   // 추천 영화 수
   ctx.fillStyle = '#7a7670';
@@ -711,7 +711,7 @@ function renderDnaCardImage(userId, profile, twins) {
 
   // 다운로드
   const link = document.createElement('a');
-  link.download = `cinegraph-${userId}.png`;
+  link.download = `cinegraph-${recommenderId}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
 }
@@ -737,8 +737,8 @@ function roundRect(ctx, x, y, w, h, r, stroke) {
  * 코사인 유사도로 취향 쌍둥이 찾기
  * 클러스터 분포 벡터를 비교해서 가장 비슷한 추천인 1~2명 반환
  */
-function findTasteTwins(userId, profiles) {
-  const myProfile = profiles[userId];
+function findTasteTwins(recommenderId, profiles) {
+  const myProfile = profiles[recommenderId];
   if (!myProfile || myProfile.count < 1) return [];
 
   // 클러스터 분포를 7차원 벡터로 변환
@@ -765,7 +765,7 @@ function findTasteTwins(userId, profiles) {
   const results = [];
 
   for (const [name, profile] of Object.entries(profiles)) {
-    if (name === userId) continue;
+    if (name === recommenderId) continue;
     if (profile.count < 2) continue; // 1편만 추천한 사람은 제외
     const sim = cosineSim(myVec, toVector(profile.clusters));
     results.push({ name, similarity: sim });
@@ -785,11 +785,11 @@ function updateNodeVisuals(films) {
   const colArr = [], sizeArr = [];
   films.forEach((f, i) => {
     const c = COLORS[f.cluster % COLORS.length];
-    const isUserFilm = userFilmIndices.length > 0 && userFilmIndices.includes(i);
-    const isDimmed = userFilmIndices.length > 0 && !isUserFilm;
-    const mult = isDimmed ? 0.12 : isUserFilm ? 1.5 : 1.0;
+    const isHighlighted = recommenderFilmIndices.length > 0 && recommenderFilmIndices.includes(i);
+    const isDimmed = recommenderFilmIndices.length > 0 && !isHighlighted;
+    const mult = isDimmed ? 0.12 : isHighlighted ? 1.5 : 1.0;
     colArr.push(c.r * mult, c.g * mult, c.b * mult);
-    sizeArr.push((isUserFilm ? 9 : isDimmed ? 3 : 5) * pixelRatio);
+    sizeArr.push((isHighlighted ? 9 : isDimmed ? 3 : 5) * pixelRatio);
   });
   filmNodePoints.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colArr, 3));
   filmNodePoints.geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizeArr, 1));

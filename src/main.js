@@ -10,38 +10,38 @@ async function init() {
   // ui.js에 모드 전달
   setAppMode(mode);
 
-  // URL 파라미터 보물찾기
+  // URL 파라미터 보물찾기 (?recommender= 우선, ?user= 폴백)
   const urlParams = new URLSearchParams(window.location.search);
-  const highlightUser = urlParams.get('user')?.toLowerCase() || '';
-  let userFilmIndices = [];
+  const highlightRecommender = (urlParams.get('recommender') || urlParams.get('user') || '').toLowerCase();
+  let recommenderFilmIndices = [];
 
-  if (highlightUser) {
+  if (highlightRecommender) {
     films.forEach((f, i) => {
       const recommenders = f.recommender.toLowerCase().split(/\s*\/\s*/);
-      if (recommenders.some(r => r.trim() === highlightUser)) {
-        userFilmIndices.push(i);
+      if (recommenders.some(r => r.trim() === highlightRecommender)) {
+        recommenderFilmIndices.push(i);
       }
     });
 
-    if (userFilmIndices.length > 0) {
+    if (recommenderFilmIndices.length > 0) {
       const banner = document.getElementById('treasure-banner');
       banner.style.display = 'block';
       banner.textContent = '';
       const nameSpan = document.createElement('span');
-      nameSpan.className = 'user-name';
-      nameSpan.textContent = `@${highlightUser}`;
+      nameSpan.className = 'recommender-name';
+      nameSpan.textContent = `@${highlightRecommender}`;
       banner.appendChild(nameSpan);
       banner.appendChild(document.createTextNode(' 님이 추천한 영화 '));
       const countSpan = document.createElement('span');
       countSpan.className = 'found-count';
-      countSpan.textContent = userFilmIndices.length;
+      countSpan.textContent = recommenderFilmIndices.length;
       banner.appendChild(countSpan);
       banner.appendChild(document.createTextNode('편이 빛나고 있어요! 찾아보세요'));
     }
   }
 
-  // ui.js에 userFilmIndices 전달
-  setUserFilmIndices(userFilmIndices);
+  // ui.js에 추천자 영화 인덱스 전달
+  setUserFilmIndices(recommenderFilmIndices);
 
   // 헤더 카운터 업데이트
   document.querySelector('.header-right').innerHTML = `${films.length} Films<br>Neural Constellation`;
@@ -52,7 +52,7 @@ async function init() {
   console.log('[Cinegraph] 추천인 프로필:', recommenderProfiles);
 
   // 성좌도 즉시 렌더링 (최우선)
-  buildConstellation(films, highlightUser, userFilmIndices);
+  buildConstellation(films, highlightRecommender, recommenderFilmIndices);
   buildLegend(films);
   bindEvents(films);
   bindReviewEvents(films);

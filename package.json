@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
+    "sync:films": "node scripts/sync-films.mjs",
+    "prebuild": "node scripts/sync-films.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

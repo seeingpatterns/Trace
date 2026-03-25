@@ -202,10 +202,10 @@ scene.add(galaxyPoints);
 let filmNodePoints = null;
 let filmPositions3D = [];
 const lines = [];
-let _userFilmIndices = [];
+let _recommenderFilmIndices = [];
 
 function setHighlightedFilms(indices) {
-  _userFilmIndices = indices;
+  _recommenderFilmIndices = indices;
 }
 
 // ═══════════════════════════════════════════════
@@ -352,13 +352,13 @@ function buildConstellation(films, highlightUser, userFilmIndices) {
   const nodePosArr = [], nodeColArr = [], nodeSizeArr = [];
   films.forEach((f, i) => {
     const baseColor = COLORS[f.cluster % COLORS.length];
-    const isUserFilm = highlightUser && userFilmIndices.includes(i);
-    const isDimmed = highlightUser && !isUserFilm;
+    const isHighlighted = highlightUser && userFilmIndices.includes(i);
+    const isDimmed = highlightUser && !isHighlighted;
 
     let finalColor;
     if (isDimmed) {
       finalColor = { r: baseColor.r * 0.12, g: baseColor.g * 0.12, b: baseColor.b * 0.12 };
-    } else if (isUserFilm) {
+    } else if (isHighlighted) {
       finalColor = { r: baseColor.r * 1.5, g: baseColor.g * 1.5, b: baseColor.b * 1.5 };
     } else {
       finalColor = applyStatusVisuals(baseColor, _filmStatuses[i]);
@@ -366,7 +366,7 @@ function buildConstellation(films, highlightUser, userFilmIndices) {
 
     nodePosArr.push(f.nx, f.ny, f.nz);
     nodeColArr.push(finalColor.r, finalColor.g, finalColor.b);
-    nodeSizeArr.push((isUserFilm ? 9 : isDimmed ? 3 : 5) * pixelRatio);
+    nodeSizeArr.push((isHighlighted ? 9 : isDimmed ? 3 : 5) * pixelRatio);
   });
 
   const nodeGeo = new THREE.BufferGeometry();
@@ -379,11 +379,11 @@ function buildConstellation(films, highlightUser, userFilmIndices) {
   // ── 각 영화에서 초기 Sparkle 분출 ──
   films.forEach((f, i) => {
     const color = COLORS[f.cluster % COLORS.length];
-    const isUserFilm = highlightUser && userFilmIndices.includes(i);
-    const count = isUserFilm ? 15 : 3; // 유저 영화는 스파클 폭발
+    const isHighlighted = highlightUser && userFilmIndices.includes(i);
+    const count = isHighlighted ? 15 : 3; // 추천자 영화는 스파클 폭발
     for (let j = 0; j < count; j++) {
       const spark = new Sparkle();
-      spark.setup(filmPositions3D[i], isUserFilm ? new THREE.Color('#ffffff') : color);
+      spark.setup(filmPositions3D[i], isHighlighted ? new THREE.Color('#ffffff') : color);
       sparkles.push(spark);
     }
   });
@@ -459,11 +459,11 @@ function render(a) {
   starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(tempStars, 3));
 
   // 찾은 별 펄스 효과
-  if (_userFilmIndices.length > 0 && filmNodePoints) {
+  if (_recommenderFilmIndices.length > 0 && filmNodePoints) {
     const sizes = filmNodePoints.geometry.attributes.size;
     const pulse = Math.sin(a * 0.004) * 0.5 + 0.5; // 0~1 반복
-    for (let i = 0; i < _userFilmIndices.length; i++) {
-      const idx = _userFilmIndices[i];
+    for (let i = 0; i < _recommenderFilmIndices.length; i++) {
+      const idx = _recommenderFilmIndices[i];
       sizes.array[idx] = (7 + pulse * 8) * pixelRatio; // 7~15 사이 반짝
     }
     sizes.needsUpdate = true;
@@ -476,7 +476,7 @@ function render(a) {
     let needsColorUpdate = false;
     for (let i = 0; i < _filmStatuses.length; i++) {
       if (_filmStatuses[i] !== 'watching') continue;
-      if (_userFilmIndices.length > 0) continue;
+      if (_recommenderFilmIndices.length > 0) continue;
       const baseColor = COLORS[_films[i].cluster % COLORS.length];
       const target = applyStatusVisuals(baseColor, 'watching');
       colors.array[i * 3] = target.r + breathe;
